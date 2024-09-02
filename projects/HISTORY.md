@@ -28,3 +28,16 @@ brew install watchman
 rm -rf node_modules
 npm install
 ```
+
+添加 three.js 和 react-three-fiber
+
+```sh
+# 参考 expo 模块安装
+npx expo install expo-gl
+
+npm install three @react-three/fiber @react-three/drei
+```
+
+遇到 bug
+
+- [嵌套窗口cube消失](https://github.com/pmndrs/react-three-fiber/issues/3332)
