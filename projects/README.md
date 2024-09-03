@@ -2,30 +2,31 @@
 
 ## 目标
 
-跨平台
+### 跨平台
 
-- Mobile/Pad first
-- Web
-- Desktop
+1. Mobile first
+2. Web
+3. Desktop
 
-支持 GUI 和 3D 交互
+### 技术栈
 
-- React Native
-- Godot 4 Web Export
+- [React Native](https://github.com/facebook/react-native.git) & [Expo](https://github.com/expo/expo.git)
+- [Godot](https://github.com/godotengine/godot.git) & [C++](https://github.com/godotengine/godot-cpp.git)
 
-## 技术栈
+#### 其他可选 GUI 方案
 
-UI Framework
-
-- [React Native](https://github.com/facebook/react-native.git)
-- [Expo](https://github.com/expo/expo.git)
-- [React Native Elements](https://github.com/react-native-elements/react-native-elements.git)
+- Flutter
+- .Net MAUI
 - [Electron](https://github.com/electron/electron.git)
 
-3D Engine
+#### 其他可选 3D 方案
 
-- [godot](https://github.com/godotengine/godot.git)
-- [godot-cpp](https://github.com/godotengine/godot-cpp.git)
+- BabylonJS
+- three.js
+- react-native-skia
+- react-native-filament
+- Unity
+- Unreal Engine
 
 ## 新闻
 
