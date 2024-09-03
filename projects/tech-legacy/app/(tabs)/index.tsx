@@ -53,7 +53,7 @@ export default function HomeScreen() {
           <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
           <ThreeBox position={[-1.2, 0, 0]} />
           <ThreeBox position={[1.2, 0, 0]} />
-          <OrbitControls />
+          <OrbitControls enableZoom={false} />
         </Canvas>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>

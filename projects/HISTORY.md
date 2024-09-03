@@ -38,6 +38,10 @@ npx expo install expo-gl
 npm install three @react-three/fiber @react-three/drei
 ```
 
-遇到 bug
+已知 bug
 
-- [嵌套窗口cube消失](https://github.com/pmndrs/react-three-fiber/issues/3332)
+> [issues: 嵌套窗口 mesh 消失](https://github.com/pmndrs/react-three-fiber/issues/3332)
+
+```js
+<OrbitControls enableZoom={false} />
+```
