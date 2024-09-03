@@ -1,5 +1,18 @@
 # projects
 
+## 目标
+
+跨平台
+
+- Mobile/Pad first
+- Web
+- Desktop
+
+支持 GUI 和 3D 交互
+
+- React Native
+- Godot 4 Web Export
+
 ## 技术栈
 
 UI Framework
@@ -11,5 +24,9 @@ UI Framework
 
 3D Engine
 
-- [three.js](https://github.com/mrdoob/three.js.git)
-- [react three fiber](https://github.com/pmndrs/react-three-fiber.git)
+- [godot](https://github.com/godotengine/godot.git)
+- [godot-cpp](https://github.com/godotengine/godot-cpp.git)
+
+## 新闻
+
+- [Godot Web Export in 4.3](https://godotengine.org/article/progress-report-web-export-in-4-3/)
