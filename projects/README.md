@@ -2,11 +2,12 @@
 
 ## 目标
 
-### 跨平台 > 开发效率 >= 调试 > 性能
+### 跨平台 > 开发效率(调试) > 体验(性能)
 
 1. Mobile (Android, iOS) 🌟🌟🌟🌟🌟
 2. Pad (Android, iPad) 🌟🌟🌟
-3. PC (Web) 🌟🌟
+3. PC (Windows, macOS, Linux) 🌟🌟
+4. XR (VisionPro) 🌟
 
 ### 可选 GUI 方案
 
