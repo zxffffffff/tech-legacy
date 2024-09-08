@@ -29,6 +29,13 @@ rm -rf node_modules
 npm install
 ```
 
+expo 本地打包(生成本机代码)
+
+```sh
+# 可选 --clean
+npx expo prebuild
+```
+
 添加 three.js 和 react-three-fiber
 
 ```sh
