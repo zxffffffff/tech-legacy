@@ -1,6 +1,15 @@
 # develop
 
-## 目标
+## 结论
+
+### 阶段一: 基于 Web 跨平台
+
+使用 WebGL / WebXR 开发跨平台应用，优先浏览器访问
+
+- 使用 3D 引擎，例如 three.js
+- 集成物理引擎，例如 Bullet
+
+## 过程
 
 ### 跨平台 > 开发效率(调试) > 体验(性能)
 
@@ -19,12 +28,16 @@
 
 ### 可选 3D 方案
 
-- Unity (C#) 商业收费
+- Unity (C#, WASM) 商业收费
 - Unreal Engine (Blueprint/C++) 商业收费
-- [Godot (GDScript)](https://github.com/godotengine/godot.git), [GDExtension (C++)](https://github.com/godotengine/godot-cpp.git), [GodotJS](https://github.com/ialex32x/GodotJS.git)
+- [Godot (GDScript)](https://github.com/godotengine/godot.git), [GDExtension (C++, WASM)](https://github.com/godotengine/godot-cpp.git)
 - [three.js](https://github.com/mrdoob/three.js.git), [react-three-fiber](https://github.com/pmndrs/react-three-fiber.git)
-- [Filament (C++)](https://github.com/google/filament), [react-native-filament](https://github.com/margelo/react-native-filament.git)
-- [Bullet (C++)](https://github.com/bulletphysics/bullet3.git)
+- [Babylon.js](https://github.com/BabylonJS/Babylon.js.git)
+- [Filament (C++, WASM)](https://github.com/google/filament), [react-native-filament (JS)](https://github.com/margelo/react-native-filament.git)
+- Havok
+- [PhysX](https://github.com/NVIDIA-Omniverse/PhysX.git)
+- [Bullet](https://github.com/bulletphysics/bullet3.git)
+- [Jolt](https://github.com/jrouwe/JoltPhysics.git)
 
 ## 资料
 
@@ -35,3 +48,4 @@
 - [Godot - as library in Milestone 4.4 (Android)](https://github.com/godotengine/godot/pull/90510)
 - [Godot - Web Export in 4.3](https://godotengine.org/article/progress-report-web-export-in-4-3/)
 - [Godot - GDExtension in 4.0](https://godotengine.org/article/introducing-gd-extensions/)
+- [Babylon - Using Havok and the Havok Plugin](https://doc.babylonjs.com/features/featuresDeepDive/physics/havokPlugin)
