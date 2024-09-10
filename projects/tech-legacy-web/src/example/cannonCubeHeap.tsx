@@ -69,7 +69,7 @@ const instancedGeometry = {
     sphere: Spheres,
 }
 
-export function CannonCubeHeap() {
+export default function CannonCubeHeap() {
     const [geometry, setGeometry] = useState<'box' | 'sphere'>('box')
     const [number] = useState(200)
     const [size] = useState(0.1)
