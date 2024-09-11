@@ -2,8 +2,8 @@ import type { PlaneProps, Triplet } from '@react-three/cannon'
 import { Physics, useBox, usePlane, useSphere } from '@react-three/cannon'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useMemo, useRef, useState } from 'react'
-import type { InstancedMesh, Mesh } from '../../node_modules/@types/three'
-import { Color } from '../../node_modules/@types/three'
+import type { InstancedMesh, Mesh } from 'three'
+import { Color } from 'three'
 
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
