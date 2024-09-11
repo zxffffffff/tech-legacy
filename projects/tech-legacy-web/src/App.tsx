@@ -1,9 +1,8 @@
-import ExampleApp from './example/exampleApp'
 
 function App() {
   return (
     <>
-      <ExampleApp />
+      App
     </>
   )
 }

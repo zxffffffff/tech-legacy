@@ -28,9 +28,20 @@ npm install @react-three/cannon
 
 ### 引入第三方组件
 
+[UI 框架 Material UI](https://mui.com/material-ui/getting-started/)
 [端侧路由 React Router](https://reactrouter.com/en/main/start/overview)
 [本地存储 localForage](https://localforage.github.io/localForage/)
 
 ```sh
+# Material
+npm install @mui/material @emotion/react @emotion/styled
+# Roboto font
+npm install @fontsource/roboto
+# SVG Icons
+npm install @mui/icons-material
+
 npm install react-router-dom localforage
+
+# 其他
+npm install markdown-to-jsx
 ```
