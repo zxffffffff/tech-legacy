@@ -2,9 +2,9 @@
 
 ## 先说结论
 
-- 使用 `Godot 4.x` 最新正式版本，若有严重 bug fix 可以临时使用 dev 版本
-- 使用 `C++` 和 `GDScript` 分别编写基建和逻辑代码，尝试是否有 `JS` 方案替换
-- 不使用 `.NET/C#` 是因为支持程度较弱且上游微软功能不完善，VS Code 无法调试，仅支持 PC 导出
+- 使用 `Godot 4.x mono` 最新正式版本，若有严重 bug fix 可以临时使用 dev 版本
+- 使用 `.NET/C#` 编写代码，尽量不使用 C++ 和 GDScript
+- 注意 .NET 8 上游微软问题，不支持 Web 导出，需要等待后续更新
 
 ## R&D
 
@@ -39,6 +39,7 @@
 
 ## 资料
 
+- [Godot - Setup C# debugging](https://cococode.net/courses/how-to-use-cs-in-godot)
 - [Godot - as library in Milestone 4.4 (Android)](https://github.com/godotengine/godot/pull/90510)
 - [Godot - Web Export in 4.3](https://godotengine.org/article/progress-report-web-export-in-4-3/)
 - [Godot - C# platform support in 4.2](https://godotengine.org/article/platform-state-in-csharp-for-godot-4-2/)
