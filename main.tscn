@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://cx3wh484lny3g"]
+
+[ext_resource type="Script" path="res://Main.cs" id="1_558pe"]
+
+[node name="MainControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_558pe")
+
+[node name="TestLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 213.0
+offset_top = 234.0
+offset_right = 637.0
+offset_bottom = 294.0
+text = "test label"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TestButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 335.0
+offset_top = 303.0
+offset_right = 519.0
+offset_bottom = 371.0
+text = "test button"
