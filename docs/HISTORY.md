@@ -70,3 +70,7 @@ sudo dotnet workload update
     ]
 }
 ```
+
+### 像素美术配置
+
+- 项目设置/渲染/纹理/默认纹理过滤：Nearest，像素放大不会变模糊
