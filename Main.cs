@@ -1,20 +1,17 @@
 using Godot;
 using System;
 
-public partial class Main : Control
+public partial class Main : Node2D
 {
-	Label testLabel;
-	Button testButton;
-
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		GD.Print("Hello C# ~");
 
-		testLabel = GetNode<Label>("TestLabel");
+		var testLabel = GetNode<Label>("TestLabel");
 		testLabel.Text = "Hello C# ~~";
 
-		testButton = GetNode<Button>("TestButton");
+		var testButton = GetNode<Button>("TestButton");
 		testButton.Pressed += () => testLabel.Text += "~";
 	}
 
