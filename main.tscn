@@ -23,3 +23,4 @@ offset_bottom = 626.0
 text = "test button"
 
 [node name="Keyboard" parent="." instance=ExtResource("2_x4jmv")]
+position = Vector2(381, 245)

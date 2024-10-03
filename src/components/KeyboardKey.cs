@@ -1,70 +1,88 @@
 using Godot;
 using System;
 
+[Tool]
 public partial class KeyboardKey : Area2D
 {
-	private AnimatedSprite2D KeySprite;
-	private Label KeyLabel;
+	private AnimatedSprite2D keySprite;
 
-	private bool IsPressed = false;
+	private Label keyLabel;
 
-	private string keyText = "?";
+	private CollisionShape2D collisionShape2D;
 
-	[Export]
+	private string keyText;
+
+	private float keyWidth;
+
+	[Export(PropertyHint.MultilineText)]
 	public string KeyText
 	{
 		get { return keyText; }
-		set { keyText = value; UpdateKeyLabel(); }
+		set { keyText = value; UpdateKeyUI(); }
 	}
+
+	[Export]
+	public float KeyWidth
+	{
+		get { return keyWidth; }
+		set { keyWidth = value; UpdateKeyUI(); }
+	}
+
+	private bool isPressed = false;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		InputEvent += KeyInputEvent;
 
-		KeySprite = GetNode<AnimatedSprite2D>("KeySprite");
-		KeyLabel = KeySprite.GetNode<Label>("KeyLabel");
+		keySprite = GetNode<AnimatedSprite2D>("KeySprite");
+		keyLabel = GetNode<Label>("KeyLabel");
+		collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
 
-		UpdateKeyLabel();
+		UpdateKeyUI();
 	}
 
-	private void UpdateKeyLabel()
+	private void UpdateKeyUI()
 	{
-		if (KeyLabel == null)
+		if (keySprite == null || keyLabel == null)
 			return;
-		KeyLabel.Text = keyText;
-		GD.Print($"[{KeyText}] UpdateKeyLabel");
+		var new_scale = new Vector2(KeyWidth, keySprite.Scale.Y);
+		keySprite.Scale = new_scale;
+		collisionShape2D.Scale = new_scale;
+		keyLabel.Text = KeyText;
 	}
 
 	private void UpdateKeyAnim()
 	{
-		if (KeySprite == null)
+		if (keySprite == null)
 			return;
-		KeySprite.Frame = IsPressed ? 3 : 0;
-		KeyLabel.Position = new Vector2(KeyLabel.Position.X, KeyLabel.Position.Y + (IsPressed ? 4 : -4));
-		GD.Print($"[{KeyText}] UpdateKeyAnim");
+		var frame = isPressed ? 3 : 0;
+		if (keySprite.Frame == frame)
+			return;
+		keySprite.Frame = frame;
+		keyLabel.Position = new Vector2(keyLabel.Position.X, keyLabel.Position.Y + (isPressed ? 4 : -4));
 	}
 
 	private void KeyInputEvent(Node viewport, InputEvent @event, long shapeIdx)
 	{
 		if (@event.IsPressed())
 		{
-			IsPressed = true;
-			GD.Print($"[{KeyText}] KeyInputEvent - IsPressed");
+			GD.Print($"{KeyText} KeyInputEvent - IsPressed");
 
+			isPressed = true;
 			UpdateKeyAnim();
 		}
-		else if (IsPressed && @event.IsReleased())
+		else if (isPressed && @event.IsReleased())
 		{
-			IsPressed = false;
-			GD.Print($"[{KeyText}] KeyInputEvent - IsReleased");
+			GD.Print($"{KeyText} KeyInputEvent - IsReleased");
 
+			isPressed = false;
 			UpdateKeyAnim();
 		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
+	// public override void _Process(double delta)
+	// {
+	// }
 }
