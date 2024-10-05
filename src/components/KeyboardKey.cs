@@ -44,7 +44,7 @@ public partial class KeyboardKey : Area2D
 
 	private void UpdateKeyUI()
 	{
-		if (keySprite == null || keyLabel == null)
+		if (keySprite == null)
 			return;
 		var new_scale = new Vector2(KeyWidth, keySprite.Scale.Y);
 		keySprite.Scale = new_scale;

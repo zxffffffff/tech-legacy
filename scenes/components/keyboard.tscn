@@ -5,6 +5,7 @@
 
 [node name="Keyboard" type="Node2D"]
 script = ExtResource("1_h0ng1")
+Rows = 5
 
 [node name="Row0" type="Node2D" parent="."]
 position = Vector2(0, -70)
@@ -271,14 +272,14 @@ KeyWidth = 2.0
 position = Vector2(164.5, 0)
 KeyText = "⬅️"
 
-[node name="VK_RIGHT" parent="Row4" instance=ExtResource("2_y7jf3")]
+[node name="VK_DOWN" parent="Row4" instance=ExtResource("2_y7jf3")]
 position = Vector2(199.5, 0)
-KeyText = "➡️"
+KeyText = "⬇️"
 
 [node name="VK_UP" parent="Row4" instance=ExtResource("2_y7jf3")]
 position = Vector2(234.5, 0)
 KeyText = "⬆️"
 
-[node name="VK_DOWN" parent="Row4" instance=ExtResource("2_y7jf3")]
+[node name="VK_RIGHT" parent="Row4" instance=ExtResource("2_y7jf3")]
 position = Vector2(269.5, 0)
-KeyText = "⬇️"
+KeyText = "➡️"

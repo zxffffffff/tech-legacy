@@ -5,11 +5,13 @@ using System.Collections.Generic;
 [Tool]
 public partial class Keyboard : Node2D
 {
+	private int rows;
+
 	[Export]
-	public int re_layout
+	public int Rows
 	{
-		get { return 0; }
-		set { layout(); }
+		get { return rows; }
+		set { rows = value; layout(); }
 	}
 
 	// Called when the node enters the scene tree for the first time.
@@ -20,7 +22,9 @@ public partial class Keyboard : Node2D
 
 	public void layout()
 	{
-		for (int i = 0; i < 999; ++i)
+		if (!IsNodeReady())
+			return;
+		for (int i = 0; i < Rows; ++i)
 		{
 			var row = GetNode<Node2D>("Row" + i.ToString());
 			if (row == null)
