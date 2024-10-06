@@ -45,7 +45,7 @@ size = Vector2(32, 32)
 
 [node name="KeyboardKey" type="Area2D"]
 script = ExtResource("1_c8kn1")
-KeyText = "A"
+KeyCode = 65
 KeyWidth = 1.0
 
 [node name="KeySprite" type="AnimatedSprite2D" parent="."]

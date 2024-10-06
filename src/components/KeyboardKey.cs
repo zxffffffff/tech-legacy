@@ -10,15 +10,17 @@ public partial class KeyboardKey : Area2D
 
 	private CollisionShape2D collisionShape2D;
 
-	private string keyText;
+	private Godot.Key keyCode;
 
 	private float keyWidth;
 
-	[Export(PropertyHint.MultilineText)]
-	public string KeyText
+	private bool isPressed = false;
+
+	[Export]
+	public Godot.Key KeyCode
 	{
-		get { return keyText; }
-		set { keyText = value; UpdateKeyUI(); }
+		get { return keyCode; }
+		set { keyCode = value; UpdateKeyUI(); }
 	}
 
 	[Export]
@@ -28,11 +30,18 @@ public partial class KeyboardKey : Area2D
 		set { keyWidth = value; UpdateKeyUI(); }
 	}
 
-	private bool isPressed = false;
+	[Export]
+	public bool IsPressed
+	{
+		get { return isPressed; }
+		set { isPressed = value; UpdateKeyAnim(); }
+	}
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		base._Ready();
+
 		InputEvent += KeyInputEvent;
 
 		keySprite = GetNode<AnimatedSprite2D>("KeySprite");
@@ -49,35 +58,51 @@ public partial class KeyboardKey : Area2D
 		var new_scale = new Vector2(KeyWidth, keySprite.Scale.Y);
 		keySprite.Scale = new_scale;
 		collisionShape2D.Scale = new_scale;
-		keyLabel.Text = KeyText;
+		keyLabel.Text = Utils.KeyboardKey.KeyEnumToString(KeyCode);
 	}
 
 	private void UpdateKeyAnim()
 	{
 		if (keySprite == null)
 			return;
-		var frame = isPressed ? 3 : 0;
+		var frame = IsPressed ? 3 : 0;
 		if (keySprite.Frame == frame)
 			return;
 		keySprite.Frame = frame;
-		keyLabel.Position = new Vector2(keyLabel.Position.X, keyLabel.Position.Y + (isPressed ? 4 : -4));
+		keyLabel.Position = new Vector2(keyLabel.Position.X, keyLabel.Position.Y + (IsPressed ? 4 : -4));
 	}
 
 	private void KeyInputEvent(Node viewport, InputEvent @event, long shapeIdx)
 	{
-		if (@event.IsPressed())
+		if (@event is InputEventMouse mouseEvent)
 		{
-			GD.Print($"{KeyText} KeyInputEvent - IsPressed");
-
-			isPressed = true;
-			UpdateKeyAnim();
+			if (mouseEvent.IsPressed())
+			{
+				// GD.Print($"{KeyCode} mouseEvent.IsPressed");
+				IsPressed = true;
+			}
+			else if (isPressed && mouseEvent.IsReleased())
+			{
+				// GD.Print($"{KeyCode} mouseEvent.IsReleased");
+				IsPressed = false;
+			}
 		}
-		else if (isPressed && @event.IsReleased())
-		{
-			GD.Print($"{KeyText} KeyInputEvent - IsReleased");
+	}
 
-			isPressed = false;
-			UpdateKeyAnim();
+	public override void _Input(InputEvent @event)
+	{
+		if (@event is InputEventKey keyEvent && keyEvent.Keycode == KeyCode)
+		{
+			if (keyEvent.IsPressed())
+			{
+				// GD.Print($"{KeyCode} keyEvent.IsPressed");
+				IsPressed = true;
+			}
+			else if (isPressed && keyEvent.IsReleased())
+			{
+				// GD.Print($"{KeyCode} keyEvent.IsReleased");
+				IsPressed = false;
+			}
 		}
 	}
 

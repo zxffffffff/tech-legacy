@@ -4,7 +4,7 @@
 
 ### 程序员都能上手的美术风格——涂鸦像素
 
-> https://www.bilibili.com/video/BV1WU4y1T7Dd
+> <https://www.bilibili.com/video/BV1WU4y1T7Dd>
 
 1. 粗描边（3px黑边）
 2. 大色块（可以加一层小光影，但颜色不要过多，不要有过渡）
