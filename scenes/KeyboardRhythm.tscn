@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://p51rik7rugba"]
+
+[ext_resource type="PackedScene" uid="uid://hvve8okt4njb" path="res://scenes/components/keyboard.tscn" id="1_hbia3"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Keyboard" parent="." instance=ExtResource("1_hbia3")]
+position = Vector2(660, 376)

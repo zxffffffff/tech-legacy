@@ -1,28 +1,76 @@
 [gd_scene load_steps=3 format=3 uid="uid://cx3wh484lny3g"]
 
-[ext_resource type="Script" path="res://Main.cs" id="1_558pe"]
-[ext_resource type="PackedScene" uid="uid://hvve8okt4njb" path="res://scenes/components/keyboard.tscn" id="2_x4jmv"]
+[ext_resource type="Script" path="res://main.gd" id="1_4uup4"]
+[ext_resource type="Texture2D" uid="uid://djr3p2gyqj4yv" path="res://icon.svg" id="2_7otak"]
 
-[node name="Root" type="Node2D"]
-position = Vector2(93, 52)
-script = ExtResource("1_558pe")
+[node name="Main" type="Node"]
+script = ExtResource("1_4uup4")
 
-[node name="TestLabel" type="Label" parent="."]
-offset_left = 338.0
-offset_top = 496.0
-offset_right = 762.0
-offset_bottom = 556.0
-text = "test label"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="MainControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="TestButton" type="Button" parent="."]
-offset_left = 460.0
-offset_top = 558.0
-offset_right = 644.0
-offset_bottom = 626.0
-text = "test button"
-
-[node name="Keyboard" parent="." instance=ExtResource("2_x4jmv")]
-position = Vector2(458, 135)
+[node name="Icon" type="Sprite2D" parent="MainControl"]
+position = Vector2(317, 296)
 scale = Vector2(2, 2)
+texture = ExtResource("2_7otak")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainControl"]
+offset_left = 779.0
+offset_top = 203.0
+offset_right = 1101.0
+offset_bottom = 428.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainControl/ScrollContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MainControl/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="KeyboardRhythm" type="Button" parent="MainControl/ScrollContainer/VBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "键盘操作：节奏音游"
+alignment = 0
+
+[node name="MarginContainer2" type="MarginContainer" parent="MainControl/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="MouseFishing" type="Button" parent="MainControl/ScrollContainer/VBoxContainer/MarginContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "鼠标操作：钓鱼"
+alignment = 0
+
+[node name="MarginContainer3" type="MarginContainer" parent="MainControl/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="MouseBuilding" type="Button" parent="MainControl/ScrollContainer/VBoxContainer/MarginContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "鼠标操作：搭积木"
+alignment = 0
+
+[node name="Root" type="Node" parent="."]
+
+[connection signal="pressed" from="MainControl/ScrollContainer/VBoxContainer/MarginContainer/KeyboardRhythm" to="." method="_on_keyboard_rhythm_pressed"]
+[connection signal="pressed" from="MainControl/ScrollContainer/VBoxContainer/MarginContainer2/MouseFishing" to="." method="_on_mouse_fishing_pressed"]
+[connection signal="pressed" from="MainControl/ScrollContainer/VBoxContainer/MarginContainer3/MouseBuilding" to="." method="_on_mouse_building_pressed"]
