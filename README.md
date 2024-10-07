@@ -14,17 +14,21 @@
 
 ## Roadmap
 
-- [ ] Ages 3-6 动手操作 | Hands-on Interaction
-  - [ ] 键盘操作：节奏音游 | Keyboard operation: Rhythm game
-  - [ ] 鼠标操作：钓鱼 | Mouse operation: Fishing
-  - [ ] 鼠标操作：搭积木 | Mouse operation: Building blocks
-- [ ] Ages 6-9 基本的计算机认知 | Basic recognition of computer
-  - [ ] 计算机硬件：拟人化模拟经营 | Computer hardware: Personified simulation management
-  - [ ] 操作系统 | Operating system
-  - [ ] 计算机软件 | Computer software
-- [ ] Ages 9-12 逻辑思维 | Logical Thinking
+- [ ] Ages 3-6: 动手操作 | Hands-on Interaction
+  - [ ] 键盘/触摸屏操作：节奏音游 | Keyboard/Touchscreen Operation: Rhythm Game
+  - [ ] 鼠标/触摸屏操作：钓鱼 | Mouse/Touchscreen Operation: Fishing
+  - [ ] 鼠标/触摸屏操作：搭积木 | Mouse/Touchscreen Operation: Building Blocks
+- [ ] Ages 6-9: 了解电脑 | Understanding of Computers
+  - [ ] 计算机硬件：拟人化模拟经营 | Computer Hardware: Personified Simulation Management
+  - [ ] 操作系统 | Operating System
+  - [ ] 计算机软件 | Computer Software
+  - [ ] 互联网 | Internet
+  - [ ] 搜索引擎 | Search Engine
+- [ ] Ages 9-12: 逻辑思维 | Logical Thinking
+  - [ ] 数据安全 | Data Security
   - [ ] 基础编程工具介绍 | Explore introductory programming tools
   - [ ] 通过编程解决问题 | Start solving problems using simple programming logic
+- [ ] Ages 12+ Todo
 
 ## License
 
