@@ -34,6 +34,8 @@
 
 ### 内存 Memory/RAM
 
+![内存条](https://github.com/zxffffffff/tech-legacy/blob/main/docs/images/内存条.jpg)
+
 ### 硬盘 Disk
 
 ![Disk-固态硬盘SSD](https://github.com/zxffffffff/tech-legacy/blob/main/docs/images/Disk-固态硬盘SSD.jpg)
