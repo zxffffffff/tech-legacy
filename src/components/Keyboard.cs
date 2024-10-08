@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 [Tool]
 public partial class Keyboard : Node2D
@@ -95,13 +94,13 @@ public partial class Keyboard : Node2D
 		}
 	}
 
-	// public override void _Input(InputEvent @event)
-	// {
-	// 	if (@event is InputEventKey keyEvent && keyEvent.Pressed)
-	// 	{
-	// 		GD.Print($"{keyEvent.Keycode} 测试");
-	// 	}
-	// }
+	public override void _Input(InputEvent @event)
+	{
+		if (@event is InputEventKey keyEvent && keyEvent.Pressed)
+		{
+			GD.Print($"按下 {keyEvent.Keycode}");
+		}
+	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	// public override void _Process(double delta)

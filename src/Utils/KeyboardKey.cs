@@ -21,11 +21,12 @@ namespace Utils
         public Godot.Key KeyCode { get; init; }
         public float KeyWidth { get; init; }
 
-        public static string KeyEnumToString(Godot.Key KeyCode)
+        public static string KeyCodeToString(Godot.Key KeyCode)
         {
             switch (KeyCode)
             {
                 case Key.Escape: return "Esc";
+                case Key.Quoteleft: return "`~";
                 case Key.Key1: return "1!";
                 case Key.Key2: return "2@";
                 case Key.Key3: return "3#";
@@ -59,7 +60,7 @@ namespace Utils
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-
+                // Todo
             }
             return KeyCode.ToString();
         }

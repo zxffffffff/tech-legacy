@@ -58,7 +58,8 @@ public partial class KeyboardKey : Area2D
 		var new_scale = new Vector2(KeyWidth, keySprite.Scale.Y);
 		keySprite.Scale = new_scale;
 		collisionShape2D.Scale = new_scale;
-		keyLabel.Text = Utils.KeyboardKey.KeyEnumToString(KeyCode);
+		keyLabel.Text = Utils.KeyboardKey.KeyCodeToString(KeyCode);
+		this.Visible = keyCode != Key.None;
 	}
 
 	private void UpdateKeyAnim()

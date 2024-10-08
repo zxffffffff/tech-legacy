@@ -8,6 +8,8 @@ namespace Utils
     {
         MiniKeyboard,
         FullKeyboard,
+        LettersOnly,
+        LettersAndPunctuation,
     }
 
     public class Keyboard
@@ -33,7 +35,7 @@ namespace Utils
                 new List<KeyboardKey>()
                 {
                     new KeyboardKey(Key.Capslock, 2),
-                    Key.A, Key.S, Key.D, Key.F, Key.G,Key.H, Key.J, Key.K, Key.L,
+                    Key.A, Key.S, Key.D, Key.F, Key.G, Key.H, Key.J, Key.K, Key.L,
                     Key.Semicolon, Key.Apostrophe,
                     new KeyboardKey(Key.Enter, 2.5f)
                 },
@@ -52,6 +54,70 @@ namespace Utils
                     new KeyboardKey(Key.Space, 7.75f),
                     new KeyboardKey(Key.Alt, 1.5f),
                     new KeyboardKey(Key.Ctrl, 2f),
+                }
+            };
+            return keys;
+        }
+
+        static public List<List<KeyboardKey>> FullKeyboard()
+        {
+            // Todo
+            return null;
+        }
+
+        static public List<List<KeyboardKey>> LettersOnly()
+        {
+            var keys = new List<List<KeyboardKey>>
+            {
+                new List<KeyboardKey>()
+                {
+                    Key.Q, Key.W, Key.E, Key.R, Key.T, Key.Y, Key.U, Key.I, Key.O, Key.P,
+                },
+                new List<KeyboardKey>()
+                {
+                    Key.A, Key.S, Key.D, Key.F, Key.G, Key.H, Key.J, Key.K, Key.L,
+                    new KeyboardKey(Key.None, 0.8f),
+                },
+                new List<KeyboardKey>()
+                {
+                    Key.Z, Key.X, Key.C, Key.V, Key.B, Key.N, Key.M,
+                    new KeyboardKey(Key.None, 2.4f),
+                }
+            };
+            return keys;
+        }
+
+        static public List<List<KeyboardKey>> LettersAndPunctuation()
+        {
+            var keys = new List<List<KeyboardKey>>
+            {
+                new List<KeyboardKey>()
+                {
+                    Key.Quoteleft,
+                    Key.Key1, Key.Key2, Key.Key3, Key.Key4, Key.Key5, Key.Key6, Key.Key7, Key.Key8, Key.Key9, Key.Key0,
+                    Key.Minus, Key.Equal,
+                    new KeyboardKey(Key.Backspace, 2)
+                },
+                new List<KeyboardKey>()
+                {
+                    new KeyboardKey(Key.Tab, 2),
+                    Key.Q, Key.W, Key.E, Key.R, Key.T, Key.Y, Key.U, Key.I, Key.O, Key.P,
+                    Key.Bracketleft, Key.Bracketright,
+                    new KeyboardKey(Key.Backslash, 1.5f)
+                },
+                new List<KeyboardKey>()
+                {
+                    new KeyboardKey(Key.Capslock, 2),
+                    Key.A, Key.S, Key.D, Key.F, Key.G, Key.H, Key.J, Key.K, Key.L,
+                    Key.Semicolon, Key.Apostrophe,
+                    new KeyboardKey(Key.Enter, 2.5f)
+                },
+                new List<KeyboardKey>()
+                {
+                    new KeyboardKey(Key.Shift, 2.8f),
+                    Key.Z, Key.X, Key.C, Key.V, Key.B, Key.N, Key.M,
+                    Key.Comma, Key.Period, Key.Slash,
+                    new KeyboardKey(Key.Shift, 2.8f)
                 }
             };
             return keys;
