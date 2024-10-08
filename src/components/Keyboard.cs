@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Utils;
 
 [Tool]
 public partial class Keyboard : Node2D
@@ -9,12 +10,12 @@ public partial class Keyboard : Node2D
 
 	private List<List<KeyboardKey>> keyboardKeys;
 
-	private Utils.KeyboardType keyboardType;
+	private KeyboardType keyboardType;
 
 	private PackedScene keyboardKeyTscn;
 
 	[Export]
-	public Utils.KeyboardType KeyboardType
+	public KeyboardType KeyboardType
 	{
 		get { return keyboardType; }
 		set { keyboardType = value; ResetKeyboard(); }
@@ -25,7 +26,7 @@ public partial class Keyboard : Node2D
 	{
 		base._Ready();
 
-		keyboardKeyTscn = GD.Load<PackedScene>("res://scenes/components/keyboard_key.tscn");
+		keyboardKeyTscn = GD.Load<PackedScene>("res://scenes/components/KeyboardKey.tscn");
 
 		ResetKeyboard();
 	}
@@ -42,16 +43,24 @@ public partial class Keyboard : Node2D
 
 		switch (keyboardType)
 		{
-			case Utils.KeyboardType.MiniKeyboard:
-				ResetMiniKeyboard(canvasGroup);
+			case KeyboardType.MiniKeyboard:
+				ResetKeyboard(canvasGroup, KeyboardMgr.MiniKeyboard());
+				break;
+			case KeyboardType.FullKeyboard:
+				ResetKeyboard(canvasGroup, KeyboardMgr.FullKeyboard());
+				break;
+			case KeyboardType.LettersOnly:
+				ResetKeyboard(canvasGroup, KeyboardMgr.LettersOnly());
+				break;
+			case KeyboardType.LettersAndPunctuation:
+				ResetKeyboard(canvasGroup, KeyboardMgr.LettersAndPunctuation());
 				break;
 		}
 	}
 
-	public void ResetMiniKeyboard(Node2D parent)
+	public void ResetKeyboard(Node2D parent, List<List<KeyboardKeyMgr>> list)
 	{
 		keyboardKeys = new List<List<KeyboardKey>>();
-		List<List<Utils.KeyboardKey>> list = Utils.Keyboard.MiniKeyboard();
 		int rows = list.Count;
 		for (int row = 0; row < rows; ++row)
 		{

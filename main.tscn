@@ -18,6 +18,7 @@ scale = Vector2(2, 2)
 texture = ExtResource("2_7otak")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MainControl"]
+layout_mode = 0
 offset_left = 779.0
 offset_top = 203.0
 offset_right = 1101.0

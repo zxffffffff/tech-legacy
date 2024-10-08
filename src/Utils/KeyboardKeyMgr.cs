@@ -4,18 +4,18 @@ using System.Runtime.InteropServices;
 
 namespace Utils
 {
-    public readonly struct KeyboardKey
+    public readonly struct KeyboardKeyMgr
     {
-        public KeyboardKey(Godot.Key KeyCode, float KeyWidth = 1)
+        public KeyboardKeyMgr(Godot.Key KeyCode, float KeyWidth = 1)
         {
             this.KeyCode = KeyCode;
             this.KeyWidth = KeyWidth;
         }
 
-        //隐式转换
-        public static implicit operator KeyboardKey(Godot.Key KeyEnum)
+        // 隐式转换
+        public static implicit operator KeyboardKeyMgr(Godot.Key KeyEnum)
         {
-            return new KeyboardKey(KeyEnum);
+            return new KeyboardKeyMgr(KeyEnum);
         }
 
         public Godot.Key KeyCode { get; init; }
