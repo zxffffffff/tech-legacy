@@ -47,21 +47,13 @@ public partial class KeyboardKey : Area2D
 		base._Ready();
 
 		InputEvent += KeyInputEvent;
-
-		KeySprite = GetNode<AnimatedSprite2D>("KeySprite");
-		KeyLabel = GetNode<Label>("KeyLabel");
-		KeyShape = GetNode<CollisionShape2D>("CollisionShape2D");
-
 		UpdateKeyUI();
 	}
 
 	private void UpdateKeyUI()
 	{
 		if (KeySprite == null)
-		{
-			GD.PrintErr("member variable is null");
 			return;
-		}
 		var new_scale = new Vector2(KeyWidth, KeySprite.Scale.Y);
 		KeySprite.Scale = new_scale;
 		KeyShape.Scale = new_scale;
@@ -72,10 +64,7 @@ public partial class KeyboardKey : Area2D
 	private void UpdateKeyAnim()
 	{
 		if (KeySprite == null)
-		{
-			GD.PrintErr("member variable is null");
 			return;
-		}
 		var frame = IsPressed ? 3 : 0;
 		if (KeySprite.Frame == frame)
 			return;
@@ -87,7 +76,7 @@ public partial class KeyboardKey : Area2D
 	{
 		if (@event is InputEventMouse mouseEvent)
 		{
-			if (mouseEvent.IsPressed())
+			if (!_isPressed && mouseEvent.IsPressed())
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsPressed");
 				IsPressed = true;
@@ -106,7 +95,7 @@ public partial class KeyboardKey : Area2D
 	{
 		if (@event is InputEventKey keyEvent && keyEvent.Keycode == KeyCode)
 		{
-			if (keyEvent.IsPressed())
+			if (!_isPressed && keyEvent.IsPressed())
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsPressed");
 				IsPressed = true;

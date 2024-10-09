@@ -3,15 +3,12 @@ using System;
 
 namespace Utils
 {
-    public partial class EventBus : Node
+    public partial class EventBus
     {
-        // 单例模式 Godot autoload
-        public static EventBus Instance { get; private set; }
+        // 单例模式
+        private static readonly EventBus _instance = new EventBus();
 
-        public override void _Ready()
-        {
-            Instance = this;
-        }
+        public static EventBus Instance { get { return _instance; } }
 
         public delegate void KeyPressEvent(bool isPressed, Key keyCode);
 

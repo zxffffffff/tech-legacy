@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://hvve8okt4njb"]
+[gd_scene load_steps=3 format=3 uid="uid://hvve8okt4njb"]
 
 [ext_resource type="Script" path="res://src/components/Keyboard.cs" id="1_h0ng1"]
+[ext_resource type="PackedScene" uid="uid://bn3dps55cged8" path="res://scenes/components/KeyboardKey.tscn" id="2_smef1"]
 
 [node name="Keyboard" type="Node2D"]
 script = ExtResource("1_h0ng1")
+KeyboardKeyTscn = ExtResource("2_smef1")

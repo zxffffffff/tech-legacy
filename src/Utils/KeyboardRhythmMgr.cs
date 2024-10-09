@@ -11,52 +11,99 @@ namespace Utils
         public string Lang { get; set; }
         public string Name { get; set; }
         public string Image { get; set; }
-        public float TimeSec { get; set; }
+        public double TimeSec { get; set; }
         public string[][] Lines { get; set; }
     }
 
     public class RhythmLyricsLine
     {
         public int Index { get; set; }
-        public float BeginTime { get; set; }
-        public float EndTime { get; set; }
+        public double BeginTime { get; set; }
+        public double EndTime { get; set; }
         public string Text { get; set; }
         public string KeyText { get; set; }
 
         public static int FieldCount { get; } = 5;
 
-        public void Deserialize(string[] line)
+        public static RhythmLyricsLine Deserialize(string[] line)
         {
             if (line.Count() < FieldCount)
             {
                 GD.PrintErr("invalid line");
-                return;
+                return null;
             }
 
-            Index = line[0].ToInt();
-            BeginTime = line[1].ToFloat();
-            EndTime = line[2].ToFloat();
-            Text = line[3];
-            KeyText = line[4];
+            var lyricsLine = new RhythmLyricsLine()
+            {
+                Index = line[0].ToInt(),
+                BeginTime = double.Parse(line[1]),
+                EndTime = double.Parse(line[2]),
+                Text = line[3],
+                KeyText = line[4],
+            };
+            return lyricsLine;
         }
 
         public string[] Serialize()
         {
             return [
                 Index.ToString(),
-                BeginTime.ToString("G9"),
-                EndTime.ToString("G9"),
+                BeginTime.ToString("F3"),
+                EndTime.ToString("F3"),
                 Text,
                 KeyText,
             ];
         }
     }
 
+    public class RhythmLyricsPlay()
+    {
+        private RhythmLyrics _lyrics;
+        private List<RhythmLyricsLine> _lyricsLines;
+
+        private int _lastIndex = 0;
+
+        public void Start(RhythmLyrics lyrics)
+        {
+            if (lyrics == null || lyrics.Lines == null)
+            {
+                GD.PrintErr("lyrics is null");
+                return;
+            }
+
+            _lyrics = lyrics;
+            _lyricsLines = _lyrics.Lines.Select(line => RhythmLyricsLine.Deserialize(line)).ToList();
+            _lastIndex = 0;
+        }
+
+        public string Check(double nowTime)
+        {
+            if (_lyrics == null || _lyrics.Lines == null)
+                return null;
+
+            for (int i = _lastIndex; i < _lyricsLines.Count; ++i)
+            {
+                var line = _lyricsLines[i];
+                if (line.BeginTime <= nowTime && nowTime <= line.EndTime)
+                {
+                    _lastIndex = i;
+                    return line.KeyText;
+                }
+                else if (nowTime < line.BeginTime)
+                {
+                    // gap
+                    _lastIndex = i;
+                    return line.KeyText;
+                }
+            }
+            return null;
+        }
+    }
+
     public class RhythmLyricsRecord()
     {
         public RhythmLyrics Lyrics { get; private set; }
-
-        public List<RhythmLyricsLine> LyricsLines { get; private set; }
+        private List<RhythmLyricsLine> _lyricsLines;
 
         public bool Running { get; private set; }
 
@@ -65,18 +112,20 @@ namespace Utils
             Running = true;
 
             Lyrics = new RhythmLyrics();
-            LyricsLines = new List<RhythmLyricsLine>();
+            _lyricsLines = new List<RhythmLyricsLine>();
         }
 
         public void Stop()
         {
             Running = false;
 
-            Lyrics.Lines = LyricsLines.Select(lyricsLine => lyricsLine.Serialize()).ToArray();
+            Lyrics.Lines = _lyricsLines.Select(lyricsLine => lyricsLine.Serialize()).ToArray();
+            _lyricsLines = null;
         }
 
-        public void Tap(string keyText, float beginTime, float endTime)
+        public void Tap(Key keyCode, double beginTime, double endTime)
         {
+            GD.Print($"Record Tap {keyCode} {beginTime} {endTime}");
             if (!Running)
             {
                 GD.PrintErr("is not running");
@@ -88,9 +137,9 @@ namespace Utils
                 // Todo 需要手动修改 Index 和 Text
                 BeginTime = beginTime,
                 EndTime = endTime,
-                KeyText = keyText,
+                KeyText = keyCode.ToString(),
             };
-            LyricsLines.Add(lyricsLine);
+            _lyricsLines.Add(lyricsLine);
         }
     }
 

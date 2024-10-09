@@ -32,10 +32,7 @@ public partial class Keyboard : Node2D
 	public void ResetKeyboard()
 	{
 		if (KeyboardKeyTscn == null)
-		{
-			GD.PrintErr("export variable is null");
 			return;
-		}
 
 		if (_canvasGroup != null)
 			_canvasGroup.QueueFree();
@@ -104,13 +101,13 @@ public partial class Keyboard : Node2D
 		}
 	}
 
-	public override void _Input(InputEvent @event)
-	{
-		if (@event is InputEventKey keyEvent && keyEvent.Pressed)
-		{
-			GD.Print($"按下 {keyEvent.Keycode}");
-		}
-	}
+	// public override void _Input(InputEvent @event)
+	// {
+	// 	if (@event is InputEventKey keyEvent && keyEvent.Pressed)
+	// 	{
+	// 		GD.Print($"按下 {keyEvent.Keycode}");
+	// 	}
+	// }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	// public override void _Process(double delta)

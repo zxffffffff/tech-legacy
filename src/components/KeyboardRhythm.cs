@@ -15,13 +15,18 @@ public partial class KeyboardRhythm : Node2D
     public Button BtnPlay;
 
     [Export]
+    public TextEdit TextLyrics;
+
+    [Export]
     public AudioStreamPlayer Audio { get; set; }
 
-    private double _timeBegin = 0;
-    private double _timeDelay = 0;
-    private double _timeNow = 0;
+    [Export]
+    public string AudioJsonPath { get; set; }
+
+    private RhythmLyricsPlay _lyricsPlay;
 
     private RhythmLyricsRecord _lyricsRecord;
+    private Dictionary<Key, double> _timeKeyDown;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -50,6 +55,7 @@ public partial class KeyboardRhythm : Node2D
 
     public void OnBtnCreate()
     {
+        _timeKeyDown = new Dictionary<Key, double>();
         _lyricsRecord = new RhythmLyricsRecord();
         _lyricsRecord.Start();
 
@@ -61,39 +67,19 @@ public partial class KeyboardRhythm : Node2D
         Play();
     }
 
-    public void OnKeyPressEvent(bool isPressed, Key keyCode)
-    {
-        if (keyCode == Key.None)
-            return;
-
-        if (_lyricsRecord != null)
-        {
-            // Todo
-        }
-    }
-
-    public void OnAudioFinished()
-    {
-        if (_lyricsRecord != null)
-        {
-            _lyricsRecord.Stop();
-            // Todo
-            _lyricsRecord = null;
-        }
-
-        // Todo
-
-        Stop();
-    }
-
     private void Play()
     {
         BtnCreate.Visible = false;
         BtnPlay.Visible = false;
 
-        _timeBegin = Time.GetTicksUsec();
-        _timeDelay = AudioServer.GetTimeToNextMix() + AudioServer.GetOutputLatency();
-        _timeNow = 0;
+        var file = FileAccess.Open(AudioJsonPath, FileAccess.ModeFlags.Read);
+        var json = file.GetAsText();
+        GD.Print("==== 歌词 ====");
+        GD.Print(json.Trim());
+        GD.Print("==== 歌词 ====");
+        var lyrics = KeyboardRhythmMgr.Deserialize(json);
+        _lyricsPlay = new RhythmLyricsPlay();
+        _lyricsPlay.Start(lyrics);
 
         Audio.Play();
     }
@@ -102,12 +88,53 @@ public partial class KeyboardRhythm : Node2D
     {
         Audio.Stop();
 
-        _timeBegin = 0;
-        _timeDelay = 0;
-        _timeNow = 0;
+        if (_lyricsRecord != null)
+        {
+            _lyricsRecord.Stop();
+            var json = KeyboardRhythmMgr.Serialize(_lyricsRecord.Lyrics);
+            json = json.Replace("[[", "[\n[");
+            json = json.Replace("],[", "],\n[");
+            json = json.Replace("]]", "]\n]");
+            GD.Print("==== 需要手动拷贝到 json ====");
+            GD.Print(json);
+            GD.Print("==== 需要手动拷贝到 json ====");
+
+            _lyricsRecord = null;
+            _timeKeyDown = null;
+        }
+
+        _lyricsPlay = null;
 
         BtnCreate.Visible = true;
         BtnPlay.Visible = true;
+    }
+
+    private double AudioTime()
+    {
+        // 参考 https://docs.godotengine.org/de/4.x/tutorials/audio/sync_with_audio.html
+        double time = Audio.GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix();
+        time -= AudioServer.GetOutputLatency();
+        return time;
+    }
+
+    public void OnKeyPressEvent(bool isPressed, Key keyCode)
+    {
+        if (keyCode == Key.None)
+            return;
+
+        if (_lyricsRecord != null)
+        {
+            var audio_time = AudioTime();
+            if (isPressed)
+                _timeKeyDown[keyCode] = audio_time;
+            else
+                _lyricsRecord.Tap(keyCode, _timeKeyDown[keyCode], audio_time);
+        }
+    }
+
+    public void OnAudioFinished()
+    {
+        Stop();
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -115,10 +142,16 @@ public partial class KeyboardRhythm : Node2D
     {
         if (Audio.Playing)
         {
-            // 同步游戏音频及音乐 https://docs.godotengine.org/zh-cn/4.x/tutorials/audio/sync_with_audio.html
-            // 使用系统时钟同步，适合节奏游戏
-            double time = (Time.GetTicksUsec() - _timeBegin) / 1000000.0d;
-            _timeNow = Math.Max(0.0d, time - _timeDelay);
+            var audio_time = AudioTime();
+            var text = _lyricsPlay.Check(audio_time);
+            if (!string.IsNullOrEmpty(text))
+            {
+                if (!TextLyrics.Text.EndsWith(text))
+                {
+                    TextLyrics.Text += "\n" + text;
+                    TextLyrics.ScrollVertical = int.MaxValue;
+                }
+            }
         }
     }
 }

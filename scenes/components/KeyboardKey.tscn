@@ -43,8 +43,11 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wrlk1"]
 size = Vector2(32, 32)
 
-[node name="KeyboardKey" type="Area2D"]
+[node name="KeyboardKey" type="Area2D" node_paths=PackedStringArray("KeySprite", "KeyLabel", "KeyShape")]
 script = ExtResource("1_gtj06")
+KeySprite = NodePath("KeySprite")
+KeyLabel = NodePath("KeyLabel")
+KeyShape = NodePath("CollisionShape2D")
 KeyCode = 65
 KeyWidth = 1.0
 

@@ -4,8 +4,14 @@
 [ext_resource type="Script" path="res://src/components/KeyboardRhythm.cs" id="1_horxn"]
 [ext_resource type="AudioStream" uid="uid://crdr53g7o1vqy" path="res://assets/KeyboardRhythm/TwoTigers.mp3" id="3_s1w23"]
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D" type="Node2D" node_paths=PackedStringArray("BtnBack", "BtnCreate", "BtnPlay", "TextLyrics", "Audio")]
 script = ExtResource("1_horxn")
+BtnBack = NodePath("Control/ButtonBack")
+BtnCreate = NodePath("Control/ButtonCreate")
+BtnPlay = NodePath("Control/ButtonPlay")
+TextLyrics = NodePath("Control/TextLyrics")
+Audio = NodePath("AudioStreamPlayer")
+AudioJsonPath = "res://assets/KeyboardRhythm/TwoTigers.json"
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -24,27 +30,35 @@ text = "Back"
 
 [node name="ButtonCreate" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 530.0
-offset_top = 240.0
-offset_right = 640.0
-offset_bottom = 293.0
+offset_left = 559.0
+offset_top = 162.0
+offset_right = 669.0
+offset_bottom = 215.0
 theme_override_font_sizes/font_size = 32
 text = "Create"
 
 [node name="ButtonPlay" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = 680.0
-offset_top = 240.0
-offset_right = 752.0
-offset_bottom = 293.0
+offset_left = 709.0
+offset_top = 162.0
+offset_right = 781.0
+offset_bottom = 215.0
 theme_override_font_sizes/font_size = 32
 text = "Play"
+
+[node name="TextLyrics" type="TextEdit" parent="Control"]
+layout_mode = 0
+offset_left = 559.0
+offset_top = 278.0
+offset_right = 782.0
+offset_bottom = 420.0
+text = "TwoTigers"
+editable = false
 
 [node name="Keyboard" parent="." instance=ExtResource("1_hbia3")]
 position = Vector2(701, 592)
 scale = Vector2(2, 2)
 KeyboardType = 2
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_s1w23")
-pitch_scale = 0.8
