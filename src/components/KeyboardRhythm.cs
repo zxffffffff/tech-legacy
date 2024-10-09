@@ -5,35 +5,40 @@ using Utils;
 
 public partial class KeyboardRhythm : Node2D
 {
-    private Button btnCreate;
-    private Button btnPlay;
+    [Export]
+    public Button BtnBack;
 
-    private AudioStreamPlayer2D audioStreamPlayer2D;
+    [Export]
+    public Button BtnCreate;
+
+    [Export]
+    public Button BtnPlay;
+
+    [Export]
+    public AudioStreamPlayer Audio { get; set; }
+
     private double _timeBegin = 0;
     private double _timeDelay = 0;
-    private delegate void AudioStreamPlayCbk(double time);
-    private AudioStreamPlayCbk audioStreamPlayCbk;
+    private double _timeNow = 0;
+
+    private RhythmLyricsRecord _lyricsRecord;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         base._Ready();
 
-        var btnBack = GetNode<Button>("Control/ButtonBack");
-        btnBack.Pressed += OnBtnBack;
+        BtnBack.Pressed += OnBtnBack;
+        BtnCreate.Pressed += OnBtnCreate;
+        BtnPlay.Pressed += OnBtnPlay;
+        Audio.Finished += OnAudioFinished;
 
-        btnCreate = GetNode<Button>("Control/ButtonCreate");
-        btnCreate.Pressed += OnBtnCreate;
-
-        btnPlay = GetNode<Button>("Control/ButtonPlay");
-        btnPlay.Pressed += OnBtnPlay;
-
-        audioStreamPlayer2D = GetNode<AudioStreamPlayer2D>("AudioStreamPlayer2D");
+        EventBus.Instance.KeyPress += OnKeyPressEvent;
     }
 
     public void OnBtnBack()
     {
-        if (btnPlay.Visible)
+        if (BtnPlay.Visible)
         {
             Common.Instance.EmitCommonSignal("Home");
         }
@@ -45,44 +50,75 @@ public partial class KeyboardRhythm : Node2D
 
     public void OnBtnCreate()
     {
-        Play((double time) => { });
+        _lyricsRecord = new RhythmLyricsRecord();
+        _lyricsRecord.Start();
+
+        Play();
     }
 
     public void OnBtnPlay()
     {
-        Play((double time) => { });
+        Play();
     }
 
-    private void Play(AudioStreamPlayCbk cbk)
+    public void OnKeyPressEvent(bool isPressed, Key keyCode)
     {
-        btnCreate.Visible = false;
-        btnPlay.Visible = false;
+        if (keyCode == Key.None)
+            return;
+
+        if (_lyricsRecord != null)
+        {
+            // Todo
+        }
+    }
+
+    public void OnAudioFinished()
+    {
+        if (_lyricsRecord != null)
+        {
+            _lyricsRecord.Stop();
+            // Todo
+            _lyricsRecord = null;
+        }
+
+        // Todo
+
+        Stop();
+    }
+
+    private void Play()
+    {
+        BtnCreate.Visible = false;
+        BtnPlay.Visible = false;
 
         _timeBegin = Time.GetTicksUsec();
         _timeDelay = AudioServer.GetTimeToNextMix() + AudioServer.GetOutputLatency();
-        audioStreamPlayer2D.Play();
-        audioStreamPlayCbk = cbk;
+        _timeNow = 0;
+
+        Audio.Play();
     }
 
     public void Stop()
     {
-        btnCreate.Visible = true;
-        btnPlay.Visible = true;
+        Audio.Stop();
 
         _timeBegin = 0;
         _timeDelay = 0;
-        audioStreamPlayer2D.Stop();
-        audioStreamPlayCbk = null;
+        _timeNow = 0;
+
+        BtnCreate.Visible = true;
+        BtnPlay.Visible = true;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if (audioStreamPlayCbk != null)
+        if (Audio.Playing)
         {
+            // 同步游戏音频及音乐 https://docs.godotengine.org/zh-cn/4.x/tutorials/audio/sync_with_audio.html
+            // 使用系统时钟同步，适合节奏游戏
             double time = (Time.GetTicksUsec() - _timeBegin) / 1000000.0d;
-            time = Math.Max(0.0d, time - _timeDelay);
-            audioStreamPlayCbk(time);
+            _timeNow = Math.Max(0.0d, time - _timeDelay);
         }
     }
 }

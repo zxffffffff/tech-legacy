@@ -5,9 +5,6 @@ namespace Utils
 {
     public partial class Common : Node
     {
-        [Signal]
-        public delegate void CommonSignalEventHandler(string key, string value);
-
         // 单例模式 Godot autoload
         public static Common Instance { get; private set; }
 
@@ -15,6 +12,9 @@ namespace Utils
         {
             Instance = this;
         }
+
+        [Signal]
+        public delegate void CommonSignalEventHandler(string key, string value);
 
         public void EmitCommonSignal(string key = "", string value = "")
         {

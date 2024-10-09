@@ -6,61 +6,62 @@ using Utils;
 [Tool]
 public partial class Keyboard : Node2D
 {
-	private CanvasGroup canvasGroup;
-
-	private List<List<KeyboardKey>> keyboardKeys;
-
-	private KeyboardType keyboardType;
-
-	private PackedScene keyboardKeyTscn;
+	private KeyboardType _keyboardType;
 
 	[Export]
 	public KeyboardType KeyboardType
 	{
-		get { return keyboardType; }
-		set { keyboardType = value; ResetKeyboard(); }
+		get { return _keyboardType; }
+		set { _keyboardType = value; ResetKeyboard(); }
 	}
+
+	[Export]
+	public PackedScene KeyboardKeyTscn { get; set; }
+
+	private CanvasGroup _canvasGroup;
+	private List<List<KeyboardKey>> _keyboardKeys;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		base._Ready();
 
-		keyboardKeyTscn = GD.Load<PackedScene>("res://scenes/components/KeyboardKey.tscn");
-
 		ResetKeyboard();
 	}
 
 	public void ResetKeyboard()
 	{
-		if (keyboardKeyTscn == null)
+		if (KeyboardKeyTscn == null)
+		{
+			GD.PrintErr("export variable is null");
 			return;
+		}
 
-		if (canvasGroup != null)
-			canvasGroup.QueueFree();
-		canvasGroup = new CanvasGroup();
-		AddChild(canvasGroup);
+		if (_canvasGroup != null)
+			_canvasGroup.QueueFree();
+		_canvasGroup = new CanvasGroup();
+		AddChild(_canvasGroup);
 
-		switch (keyboardType)
+		switch (_keyboardType)
 		{
 			case KeyboardType.MiniKeyboard:
-				ResetKeyboard(canvasGroup, KeyboardMgr.MiniKeyboard());
+				ResetKeyboard(_canvasGroup, KeyboardMgr.MiniKeyboard());
 				break;
 			case KeyboardType.FullKeyboard:
-				ResetKeyboard(canvasGroup, KeyboardMgr.FullKeyboard());
+				ResetKeyboard(_canvasGroup, KeyboardMgr.FullKeyboard());
 				break;
 			case KeyboardType.LettersOnly:
-				ResetKeyboard(canvasGroup, KeyboardMgr.LettersOnly());
+				ResetKeyboard(_canvasGroup, KeyboardMgr.LettersOnly());
 				break;
 			case KeyboardType.LettersAndPunctuation:
-				ResetKeyboard(canvasGroup, KeyboardMgr.LettersAndPunctuation());
+				ResetKeyboard(_canvasGroup, KeyboardMgr.LettersAndPunctuation());
 				break;
 		}
 	}
 
 	public void ResetKeyboard(Node2D parent, List<List<KeyboardKeyMgr>> list)
 	{
-		keyboardKeys = new List<List<KeyboardKey>>();
+		_keyboardKeys = new List<List<KeyboardKey>>();
 		int rows = list.Count;
 		for (int row = 0; row < rows; ++row)
 		{
@@ -68,17 +69,17 @@ public partial class Keyboard : Node2D
 			int cols = list[row].Count;
 			for (int col = 0; col < cols; ++col)
 			{
-				var key = keyboardKeyTscn.Instantiate() as KeyboardKey;
+				var key = KeyboardKeyTscn.Instantiate() as KeyboardKey;
 				key.KeyCode = list[row][col].KeyCode;
 				key.KeyWidth = list[row][col].KeyWidth;
 				parent.AddChild(key);
 				keys.Add(key);
 			}
-			keyboardKeys.Add(keys);
+			_keyboardKeys.Add(keys);
 		}
 		for (int row = 0; row < rows; ++row)
 		{
-			LayoutRowKeys(keyboardKeys[row], row - rows / 2);
+			LayoutRowKeys(_keyboardKeys[row], row - rows / 2);
 		}
 	}
 

@@ -5,37 +5,40 @@ using Utils;
 [Tool]
 public partial class KeyboardKey : Area2D
 {
-	private AnimatedSprite2D keySprite;
+	[Export]
+	public AnimatedSprite2D KeySprite;
 
-	private Label keyLabel;
+	[Export]
+	public Label KeyLabel;
 
-	private CollisionShape2D collisionShape2D;
+	[Export]
+	public CollisionShape2D KeyShape;
 
-	private Godot.Key keyCode;
-
-	private float keyWidth;
-
-	private bool isPressed = false;
+	private Godot.Key _keyCode;
 
 	[Export]
 	public Godot.Key KeyCode
 	{
-		get { return keyCode; }
-		set { keyCode = value; UpdateKeyUI(); }
+		get { return _keyCode; }
+		set { _keyCode = value; UpdateKeyUI(); }
 	}
+
+	private float _keyWidth;
 
 	[Export]
 	public float KeyWidth
 	{
-		get { return keyWidth; }
-		set { keyWidth = value; UpdateKeyUI(); }
+		get { return _keyWidth; }
+		set { _keyWidth = value; UpdateKeyUI(); }
 	}
+
+	private bool _isPressed = false;
 
 	[Export]
 	public bool IsPressed
 	{
-		get { return isPressed; }
-		set { isPressed = value; UpdateKeyAnim(); }
+		get { return _isPressed; }
+		set { _isPressed = value; UpdateKeyAnim(); }
 	}
 
 	// Called when the node enters the scene tree for the first time.
@@ -45,33 +48,39 @@ public partial class KeyboardKey : Area2D
 
 		InputEvent += KeyInputEvent;
 
-		keySprite = GetNode<AnimatedSprite2D>("KeySprite");
-		keyLabel = GetNode<Label>("KeyLabel");
-		collisionShape2D = GetNode<CollisionShape2D>("CollisionShape2D");
+		KeySprite = GetNode<AnimatedSprite2D>("KeySprite");
+		KeyLabel = GetNode<Label>("KeyLabel");
+		KeyShape = GetNode<CollisionShape2D>("CollisionShape2D");
 
 		UpdateKeyUI();
 	}
 
 	private void UpdateKeyUI()
 	{
-		if (keySprite == null)
+		if (KeySprite == null)
+		{
+			GD.PrintErr("member variable is null");
 			return;
-		var new_scale = new Vector2(KeyWidth, keySprite.Scale.Y);
-		keySprite.Scale = new_scale;
-		collisionShape2D.Scale = new_scale;
-		keyLabel.Text = KeyboardKeyMgr.KeyCodeToString(KeyCode);
-		this.Visible = keyCode != Key.None;
+		}
+		var new_scale = new Vector2(KeyWidth, KeySprite.Scale.Y);
+		KeySprite.Scale = new_scale;
+		KeyShape.Scale = new_scale;
+		KeyLabel.Text = KeyboardKeyMgr.KeyCodeToString(KeyCode);
+		this.Visible = _keyCode != Key.None;
 	}
 
 	private void UpdateKeyAnim()
 	{
-		if (keySprite == null)
+		if (KeySprite == null)
+		{
+			GD.PrintErr("member variable is null");
 			return;
+		}
 		var frame = IsPressed ? 3 : 0;
-		if (keySprite.Frame == frame)
+		if (KeySprite.Frame == frame)
 			return;
-		keySprite.Frame = frame;
-		keyLabel.Position = new Vector2(keyLabel.Position.X, keyLabel.Position.Y + (IsPressed ? 4 : -4));
+		KeySprite.Frame = frame;
+		KeyLabel.Position = new Vector2(KeyLabel.Position.X, KeyLabel.Position.Y + (IsPressed ? 4 : -4));
 	}
 
 	private void KeyInputEvent(Node viewport, InputEvent @event, long shapeIdx)
@@ -82,11 +91,13 @@ public partial class KeyboardKey : Area2D
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsPressed");
 				IsPressed = true;
+				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
 			}
-			else if (isPressed && mouseEvent.IsReleased())
+			else if (_isPressed && mouseEvent.IsReleased())
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsReleased");
 				IsPressed = false;
+				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
 			}
 		}
 	}
@@ -99,11 +110,13 @@ public partial class KeyboardKey : Area2D
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsPressed");
 				IsPressed = true;
+				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
 			}
-			else if (isPressed && keyEvent.IsReleased())
+			else if (_isPressed && keyEvent.IsReleased())
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsReleased");
 				IsPressed = false;
+				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
 			}
 		}
 	}
