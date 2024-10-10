@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using Utils;
 
 [Tool]
-public partial class KeyboardRhythmPlay : Area2D
+public partial class KeyboardRhythmPlay : Node2D
 {
     [Export]
-    public TextEdit PlayArea;
+    public Sprite2D PlayArea;
 
     [Export]
     public AudioStreamPlayer Audio { get; set; }
@@ -16,7 +16,7 @@ public partial class KeyboardRhythmPlay : Area2D
     public string AudioJsonPath { get; set; }
 
     [Export]
-    public PackedScene KeyboardRhythmKeyTscn { get; set; }
+    public PackedScene KeyboardKeyTscn { get; set; }
 
     // record
     private RhythmLyricsRecord _lyricsRecord;
@@ -24,8 +24,8 @@ public partial class KeyboardRhythmPlay : Area2D
 
     // play
     private List<RhythmLyricsLine> _lyricsLines;
-    private Dictionary<int, KeyboardRhythmKey> _playKeys = new Dictionary<int, KeyboardRhythmKey>();
-    private List<KeyboardRhythmKey> _recycleKeys = new List<KeyboardRhythmKey>();
+    private Dictionary<int, KeyboardKey> _playKeys = new Dictionary<int, KeyboardKey>();
+    private List<KeyboardKey> _recycleKeys = new List<KeyboardKey>();
 
     // cbk
     public delegate void PlayStopCbk(bool isFinished);
@@ -113,10 +113,15 @@ public partial class KeyboardRhythmPlay : Area2D
         }
     }
 
-    private KeyboardRhythmKey GetPlayKey(int hash, bool create)
+    private KeyboardKey GetPlayKey(int hash, bool create)
     {
-        var item = _playKeys[hash];
-        if (create && item == null)
+        KeyboardKey item;
+        if (_playKeys.TryGetValue(hash, out item))
+        {
+            return item;
+        }
+
+        if (create)
         {
             if (_recycleKeys.Count > 0)
             {
@@ -125,17 +130,19 @@ public partial class KeyboardRhythmPlay : Area2D
             }
             else
             {
-                item = KeyboardRhythmKeyTscn.Instantiate() as KeyboardRhythmKey;
-                PlayArea.AddChild(item);
+                item = KeyboardKeyTscn.Instantiate() as KeyboardKey;
+                item.Scale = new Vector2(2, 2);
+                item.EnableInput = false;
+                AddChild(item);
             }
-            _playKeys[hash] = item;
+            _playKeys.Add(hash, item);
         }
         return item;
     }
 
     private void RecyclePlayKey(int hash)
     {
-        var item = _playKeys[hash];
+        var item = GetPlayKey(hash, false);
         if (item == null)
         {
             GD.PrintErr("RecyclePlayKey is null");
@@ -150,19 +157,28 @@ public partial class KeyboardRhythmPlay : Area2D
     {
         if (Audio.Playing)
         {
+            var area_w = PlayArea.Texture.GetSize().X * PlayArea.Scale.X;
+            var area_h = PlayArea.Texture.GetSize().Y * PlayArea.Scale.Y;
+            var area_x = PlayArea.Position.X - area_w / 2;
+            var area_y = PlayArea.Position.Y - area_h / 2;
+
             var audio_time = AudioTime();
-            const double show_time = 1.5f; // Todo
+            const double show_time = 2f; // Todo
             var long_time = audio_time + show_time;
             for (int i = 0; i < _lyricsLines.Count; ++i)
             {
                 var line = _lyricsLines[i];
-                if (audio_time <= line.BeginTime && line.EndTime <= long_time)
+                if (audio_time <= line.BeginTime && line.BeginTime <= long_time)
                 {
                     // show
                     var play_key = GetPlayKey(line.GetHashCode(), true);
+                    if (play_key.Progress == 0)
+                    {
+                        play_key.KeyCode = line.KeyCode;
+                    }
                     play_key.Progress = (line.BeginTime - audio_time) / show_time;
-                    var x = PlayArea.Position.X + PlayArea.Size.X / 2;
-                    var y = PlayArea.Position.Y + PlayArea.Size.Y * play_key.Progress;
+                    var x = area_x + area_w / 2;
+                    var y = area_y + area_h * (1 - play_key.Progress);
                     play_key.Position = new Vector2((float)x, (float)y);
                 }
                 else

@@ -45,6 +45,7 @@ public partial class KeyboardRhythm : Node2D
         BtnCreate.Visible = false;
         BtnPlay.Visible = false;
 
+        RhythmPlay.Visible = true;
         RhythmPlay.Record();
     }
 
@@ -53,6 +54,7 @@ public partial class KeyboardRhythm : Node2D
         BtnCreate.Visible = false;
         BtnPlay.Visible = false;
 
+        RhythmPlay.Visible = true;
         RhythmPlay.Play();
     }
 
@@ -60,5 +62,7 @@ public partial class KeyboardRhythm : Node2D
     {
         BtnCreate.Visible = true;
         BtnPlay.Visible = true;
+
+        RhythmPlay.Visible = false;
     }
 }

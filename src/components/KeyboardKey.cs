@@ -41,6 +41,12 @@ public partial class KeyboardKey : Area2D
 		set { _isPressed = value; UpdateKeyAnim(); }
 	}
 
+	[Export]
+	public double Progress { get; set; } = 0;
+
+	[Export]
+	public bool EnableInput { get; set; } = true;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -58,7 +64,7 @@ public partial class KeyboardKey : Area2D
 		KeySprite.Scale = new_scale;
 		KeyShape.Scale = new_scale;
 		KeyLabel.Text = KeyboardKeyMgr.KeyCodeToString(KeyCode);
-		this.Visible = _keyCode != Key.None;
+		this.Visible = KeyCode != Key.None;
 	}
 
 	private void UpdateKeyAnim()
@@ -74,6 +80,9 @@ public partial class KeyboardKey : Area2D
 
 	private void KeyInputEvent(Node viewport, InputEvent @event, long shapeIdx)
 	{
+		if (!EnableInput)
+			return;
+
 		if (@event is InputEventMouse mouseEvent)
 		{
 			if (!_isPressed && mouseEvent.IsPressed())
@@ -93,6 +102,9 @@ public partial class KeyboardKey : Area2D
 
 	public override void _Input(InputEvent @event)
 	{
+		if (!EnableInput)
+			return;
+
 		if (@event is InputEventKey keyEvent && keyEvent.Keycode == KeyCode)
 		{
 			if (!_isPressed && keyEvent.IsPressed())

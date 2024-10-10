@@ -62,7 +62,7 @@ namespace Utils
             {
                 // Todo
             }
-            return nameof(KeyCode);
+            return Enum.GetName(KeyCode);
         }
 
         public static Key StringToKeyCode(string key)

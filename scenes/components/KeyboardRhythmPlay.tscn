@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://da7y5lp0aox28"]
+
+[ext_resource type="Script" path="res://src/components/KeyboardRhythmPlay.cs" id="1_v2eur"]
+[ext_resource type="PackedScene" uid="uid://bn3dps55cged8" path="res://scenes/components/KeyboardKey.tscn" id="2_vxamm"]
+[ext_resource type="PackedScene" uid="uid://hvve8okt4njb" path="res://scenes/components/Keyboard.tscn" id="3_cm20s"]
+[ext_resource type="AudioStream" uid="uid://crdr53g7o1vqy" path="res://assets/KeyboardRhythm/TwoTigers.mp3" id="4_b6o1b"]
+[ext_resource type="Texture2D" uid="uid://bhkxfgm0up8fn" path="res://assets/Complete_UI_Essential_Pack_Free/01_Flat_Theme/Sprites/UI_Flat_Bar10a.png" id="5_s13fo"]
+
+[node name="KeyboardRhythmPlay" type="Node2D" node_paths=PackedStringArray("PlayArea", "Audio")]
+script = ExtResource("1_v2eur")
+PlayArea = NodePath("UiFlatBar10a")
+Audio = NodePath("AudioStreamPlayer")
+AudioJsonPath = "res://assets/KeyboardRhythm/TwoTigers.json"
+KeyboardKeyTscn = ExtResource("2_vxamm")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_b6o1b")
+
+[node name="Keyboard" parent="." instance=ExtResource("3_cm20s")]
+position = Vector2(683, 630)
+scale = Vector2(2, 2)
+KeyboardType = 2
+
+[node name="UiFlatBar10a" type="Sprite2D" parent="."]
+position = Vector2(683, 271.5)
+scale = Vector2(25, 39.5833)
+texture = ExtResource("5_s13fo")
