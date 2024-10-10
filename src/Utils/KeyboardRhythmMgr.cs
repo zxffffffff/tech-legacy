@@ -8,11 +8,14 @@ namespace Utils
 {
     public class RhythmLyrics
     {
-        public string Lang { get; set; }
-        public string Name { get; set; }
-        public string Image { get; set; }
-        public double TimeSec { get; set; }
-        public string[][] Lines { get; set; }
+        public string Title { get; set; } // ti 标题
+        public string Artist { get; set; } // ar 歌手
+        public string Author { get; set; } // au 作曲
+        public string Lyricists { get; set; } // lr 作词
+        public string Album { get; set; } // al 专辑
+        public string Length { get; set; } // length (mm:ss)
+
+        public string[][] Lines { get; set; } // <mm:ss.xx> 1 <mm:ss.xx> 2 <mm:ss.xx>
     }
 
     public class RhythmLyricsLine
@@ -21,9 +24,20 @@ namespace Utils
         public double BeginTime { get; set; }
         public double EndTime { get; set; }
         public string Text { get; set; }
-        public string KeyText { get; set; }
+        public Key KeyCode { get; set; }
 
         public static int FieldCount { get; } = 5;
+
+        public string[] Serialize()
+        {
+            return [
+                Index.ToString(),
+                BeginTime.ToString("0.00"),
+                EndTime.ToString("0.00"),
+                Text,
+                KeyboardKeyMgr.KeyCodeToString(KeyCode),
+            ];
+        }
 
         public static RhythmLyricsLine Deserialize(string[] line)
         {
@@ -39,64 +53,9 @@ namespace Utils
                 BeginTime = double.Parse(line[1]),
                 EndTime = double.Parse(line[2]),
                 Text = line[3],
-                KeyText = line[4],
+                KeyCode = KeyboardKeyMgr.StringToKeyCode(line[4]),
             };
             return lyricsLine;
-        }
-
-        public string[] Serialize()
-        {
-            return [
-                Index.ToString(),
-                BeginTime.ToString("F3"),
-                EndTime.ToString("F3"),
-                Text,
-                KeyText,
-            ];
-        }
-    }
-
-    public class RhythmLyricsPlay()
-    {
-        private RhythmLyrics _lyrics;
-        private List<RhythmLyricsLine> _lyricsLines;
-
-        private int _lastIndex = 0;
-
-        public void Start(RhythmLyrics lyrics)
-        {
-            if (lyrics == null || lyrics.Lines == null)
-            {
-                GD.PrintErr("lyrics is null");
-                return;
-            }
-
-            _lyrics = lyrics;
-            _lyricsLines = _lyrics.Lines.Select(line => RhythmLyricsLine.Deserialize(line)).ToList();
-            _lastIndex = 0;
-        }
-
-        public string Check(double nowTime)
-        {
-            if (_lyrics == null || _lyrics.Lines == null)
-                return null;
-
-            for (int i = _lastIndex; i < _lyricsLines.Count; ++i)
-            {
-                var line = _lyricsLines[i];
-                if (line.BeginTime <= nowTime && nowTime <= line.EndTime)
-                {
-                    _lastIndex = i;
-                    return line.KeyText;
-                }
-                else if (nowTime < line.BeginTime)
-                {
-                    // gap
-                    _lastIndex = i;
-                    return line.KeyText;
-                }
-            }
-            return null;
         }
     }
 
@@ -137,7 +96,7 @@ namespace Utils
                 // Todo 需要手动修改 Index 和 Text
                 BeginTime = beginTime,
                 EndTime = endTime,
-                KeyText = keyCode.ToString(),
+                KeyCode = keyCode,
             };
             _lyricsLines.Add(lyricsLine);
         }
@@ -145,14 +104,24 @@ namespace Utils
 
     public class KeyboardRhythmMgr
     {
+        public static string Serialize(RhythmLyrics lyrics)
+        {
+            return JsonSerializer.Serialize(lyrics);
+        }
+
         public static RhythmLyrics Deserialize(string json)
         {
             return JsonSerializer.Deserialize<RhythmLyrics>(json);
         }
 
-        public static string Serialize(RhythmLyrics lyrics)
+        public static List<RhythmLyricsLine> DeserializeLines(string[][] lines)
         {
-            return JsonSerializer.Serialize(lyrics);
+            if (lines == null)
+            {
+                GD.PrintErr("DeserializeLines is null");
+                return null;
+            }
+            return lines.Select(line => RhythmLyricsLine.Deserialize(line)).ToList();
         }
     }
 }

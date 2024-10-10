@@ -6,22 +6,22 @@ namespace Utils
 {
     public readonly struct KeyboardKeyMgr
     {
-        public KeyboardKeyMgr(Godot.Key KeyCode, float KeyWidth = 1)
+        public KeyboardKeyMgr(Key KeyCode, float KeyWidth = 1)
         {
             this.KeyCode = KeyCode;
             this.KeyWidth = KeyWidth;
         }
 
         // 隐式转换
-        public static implicit operator KeyboardKeyMgr(Godot.Key KeyEnum)
+        public static implicit operator KeyboardKeyMgr(Key keyCode)
         {
-            return new KeyboardKeyMgr(KeyEnum);
+            return new KeyboardKeyMgr(keyCode);
         }
 
-        public Godot.Key KeyCode { get; init; }
+        public Key KeyCode { get; init; }
         public float KeyWidth { get; init; }
 
-        public static string KeyCodeToString(Godot.Key KeyCode)
+        public static string KeyCodeToString(Key KeyCode)
         {
             switch (KeyCode)
             {
@@ -62,7 +62,51 @@ namespace Utils
             {
                 // Todo
             }
-            return KeyCode.ToString();
+            return nameof(KeyCode);
+        }
+
+        public static Key StringToKeyCode(string key)
+        {
+            switch (key)
+            {
+                case "Esc": return Key.Escape;
+                case "`~": return Key.Quoteleft;
+                case "1!": return Key.Key1;
+                case "2@": return Key.Key2;
+                case "3#": return Key.Key3;
+                case "4$": return Key.Key4;
+                case "5%": return Key.Key5;
+                case "6^": return Key.Key6;
+                case "7&": return Key.Key7;
+                case "8*": return Key.Key8;
+                case "9(": return Key.Key9;
+                case "0)": return Key.Key0;
+                case "-_": return Key.Minus;
+                case "=+": return Key.Equal;
+                case "Back": return Key.Backspace;
+                case "[{": return Key.Bracketleft;
+                case "]}": return Key.Bracketright;
+                case "\\|": return Key.Backslash;
+                case "Caps": return Key.Capslock;
+                case ";:": return Key.Semicolon;
+                case "'\"": return Key.Apostrophe;
+                case ",<": return Key.Comma;
+                case ".>": return Key.Period;
+                case "/?": return Key.Slash;
+            }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                switch (key)
+                {
+                    case "Opt": return Key.Alt;
+                    case "Cmd": return Key.Meta;
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // Todo
+            }
+            return Enum.Parse<Key>(key);
         }
     }
 }
