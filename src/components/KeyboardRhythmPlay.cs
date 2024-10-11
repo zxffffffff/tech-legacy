@@ -1,13 +1,21 @@
 using Godot;
+using Stateless;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Utils;
 
 [Tool]
 public partial class KeyboardRhythmPlay : Node2D
 {
     [Export]
+    public Label PlayScore;
+
+    [Export]
     public Sprite2D PlayArea;
+
+    [Export]
+    public Keyboard PlayKeyboard;
 
     [Export]
     public AudioStreamPlayer Audio { get; set; }
@@ -18,37 +26,65 @@ public partial class KeyboardRhythmPlay : Node2D
     [Export]
     public PackedScene KeyboardKeyTscn { get; set; }
 
+    private StateMachine<RhythmPlayState, RhythmPlayTrigger> _fsm = new StateMachine<RhythmPlayState, RhythmPlayTrigger>(RhythmPlayState.Init);
+
     // record
     private RhythmLyricsRecord _lyricsRecord;
     private Dictionary<Key, double> _timeKeyDown;
 
     // play
-    private List<RhythmLyricsLine> _lyricsLines;
+    private List<RhythmLyricsWord> _lyricsWords;
+    private int _lyricsScore = 0;
     private Dictionary<int, KeyboardKey> _playKeys = new Dictionary<int, KeyboardKey>();
     private List<KeyboardKey> _recycleKeys = new List<KeyboardKey>();
 
+    float _playAreaH = 0;
+    float _PlayAreaTop = 0;
+    Dictionary<Key, float> _playAreaKeyX;
+
+    [Export]
+    double PlayAreaShowTime { get; set; } = 2f;
+    [Export]
+    double PlayAreaPressTime { get; set; } = 0.2f;
+
     // cbk
-    public delegate void PlayStopCbk(bool isFinished);
-    public PlayStopCbk PlayStop { get; set; }
+    public delegate void FinishedCbk();
+    public event FinishedCbk Finished;
 
     public override void _Ready()
     {
         base._Ready();
 
         Audio.Finished += OnAudioFinished;
-        EventBus.Instance.KeyPress += OnKeyPressEvent;
+        PlayKeyboard.KeyPressCbk += OnKeyPressEvent;
+
+        _fsm.Configure(RhythmPlayState.Init)
+            .Permit(RhythmPlayTrigger.Play, RhythmPlayState.Playing);
+
+        _fsm.Configure(RhythmPlayState.Playing)
+            .OnEntry(OnPlay)
+            .InternalTransition(RhythmPlayTrigger.Record, OnRecord)
+            .Permit(RhythmPlayTrigger.Pause, RhythmPlayState.Pausing)
+            .Permit(RhythmPlayTrigger.GG, RhythmPlayState.Settlement);
+
+        _fsm.Configure(RhythmPlayState.Pausing)
+            .SubstateOf(RhythmPlayState.Playing)
+            .OnEntry(OnEntryPausing)
+            .OnExit(OnExitPausing)
+            .Permit(RhythmPlayTrigger.PauseResume, RhythmPlayState.Playing);
+
+        _fsm.Configure(RhythmPlayState.Settlement)
+            .OnEntry(OnSettlement)
+            .OnExit(OnSettlementClear)
+            .Permit(RhythmPlayTrigger.Clear, RhythmPlayState.Init);
     }
 
-    public void Record()
+    public void Action(RhythmPlayTrigger trigger)
     {
-        _timeKeyDown = new Dictionary<Key, double>();
-        _lyricsRecord = new RhythmLyricsRecord();
-        _lyricsRecord.Start();
-
-        Play();
+        _fsm.Fire(trigger);
     }
 
-    public void Play()
+    private void OnPlay()
     {
         var file = FileAccess.Open(AudioJsonPath, FileAccess.ModeFlags.Read);
         var json = file.GetAsText();
@@ -56,15 +92,52 @@ public partial class KeyboardRhythmPlay : Node2D
         GD.Print(json.Trim());
         GD.Print("==== 读取 json ====");
         var lyrics = KeyboardRhythmMgr.Deserialize(json);
-        _lyricsLines = KeyboardRhythmMgr.DeserializeLines(lyrics.Lines);
+        _lyricsWords = KeyboardRhythmMgr.DeserializeWords(lyrics.Words);
+        _lyricsScore = 0;
 
+        _playAreaH = PlayArea.Texture.GetSize().Y * PlayArea.Scale.Y;
+        _PlayAreaTop = PlayArea.Position.Y - _playAreaH / 2;
+        _playAreaKeyX = new Dictionary<Key, float>();
+        foreach (var row_keys in PlayKeyboard.Keys)
+        {
+            foreach (var key in row_keys)
+            {
+                _playAreaKeyX[key.KeyCode] = key.Position.X;
+            }
+        }
+
+        UpdatePlayScore();
         Audio.Play();
     }
 
-    public void Stop(bool isFinished)
+    private void OnRecord()
+    {
+        _lyricsRecord = new RhythmLyricsRecord();
+        _lyricsRecord.Start();
+        _timeKeyDown = new Dictionary<Key, double>();
+    }
+
+    private void OnEntryPausing()
+    {
+        // Todo
+    }
+
+    private void OnExitPausing()
+    {
+        // Todo
+    }
+
+    private void OnSettlement()
     {
         Audio.Stop();
 
+        // Todo
+
+        Finished();
+    }
+
+    private void OnSettlementClear()
+    {
         if (_lyricsRecord != null)
         {
             _lyricsRecord.Stop();
@@ -80,14 +153,25 @@ public partial class KeyboardRhythmPlay : Node2D
             _timeKeyDown = null;
         }
 
-        _lyricsLines = null;
+        _lyricsWords = null;
+        _lyricsScore = 0;
 
-        PlayStop(isFinished);
+        Debug.Assert(_playKeys.Count == 0);
+
+        _playAreaH = 0;
+        _PlayAreaTop = 0;
+        _playAreaKeyX = null;
     }
 
     private void OnAudioFinished()
     {
-        Stop(true);
+        Action(RhythmPlayTrigger.GG);
+    }
+
+    private void UpdatePlayScore()
+    {
+        int score = 1000000 * _lyricsScore / _lyricsWords.Count;
+        PlayScore.Text = score.ToString();
     }
 
     private double AudioTime()
@@ -96,21 +180,6 @@ public partial class KeyboardRhythmPlay : Node2D
         double time = Audio.GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix();
         time -= AudioServer.GetOutputLatency();
         return time;
-    }
-
-    private void OnKeyPressEvent(bool isPressed, Key keyCode)
-    {
-        if (keyCode == Key.None)
-            return;
-
-        if (_lyricsRecord != null)
-        {
-            var audio_time = AudioTime();
-            if (isPressed)
-                _timeKeyDown[keyCode] = audio_time;
-            else
-                _lyricsRecord.Tap(keyCode, _timeKeyDown[keyCode], audio_time);
-        }
     }
 
     private KeyboardKey GetPlayKey(int hash, bool create)
@@ -152,44 +221,85 @@ public partial class KeyboardRhythmPlay : Node2D
         _recycleKeys.Add(item);
     }
 
+    private void OnKeyPressEvent(bool isPressed, Key keyCode)
+    {
+        if (keyCode == Key.None)
+            return;
+
+        if (_lyricsRecord != null)
+        {
+            var audio_time = AudioTime();
+            if (isPressed)
+                _timeKeyDown[keyCode] = audio_time;
+            else
+                _lyricsRecord.Tap(keyCode, _timeKeyDown[keyCode], audio_time);
+        }
+
+        if (_fsm.State == RhythmPlayState.Playing && isPressed)
+        {
+            var audio_time = AudioTime();
+            var start_time = audio_time - PlayAreaPressTime / 2;
+            var end_time = audio_time + PlayAreaPressTime / 2;
+            for (int i = 0; i < _lyricsWords.Count; ++i)
+            {
+                var word = _lyricsWords[i];
+                if (start_time <= word.BeginTime && word.BeginTime <= end_time)
+                {
+                    var play_key = GetPlayKey(word.GetHashCode(), false);
+                    if (play_key == null)
+                    {
+                        GD.PrintErr("GetPlayKey tap is null");
+                        continue;
+                    }
+
+                    // tap
+                    _lyricsScore += 1;
+                    UpdatePlayScore();
+
+                    play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, 0);
+                    play_key.Position = new Vector2(-99999, -99999);
+                    RecyclePlayKey(word.GetHashCode());
+                }
+            }
+        }
+    }
+
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if (Audio.Playing)
+        if (_fsm.State == RhythmPlayState.Playing)
         {
-            var area_w = PlayArea.Texture.GetSize().X * PlayArea.Scale.X;
-            var area_h = PlayArea.Texture.GetSize().Y * PlayArea.Scale.Y;
-            var area_x = PlayArea.Position.X - area_w / 2;
-            var area_y = PlayArea.Position.Y - area_h / 2;
-
             var audio_time = AudioTime();
-            const double show_time = 2f; // Todo
-            var long_time = audio_time + show_time;
-            for (int i = 0; i < _lyricsLines.Count; ++i)
+            var long_time = audio_time + PlayAreaShowTime;
+            for (int i = 0; i < _lyricsWords.Count; ++i)
             {
-                var line = _lyricsLines[i];
-                if (audio_time <= line.BeginTime && line.BeginTime <= long_time)
+                var word = _lyricsWords[i];
+                if (audio_time <= word.BeginTime && word.BeginTime <= long_time)
                 {
-                    // show
-                    var play_key = GetPlayKey(line.GetHashCode(), true);
-                    if (play_key.Progress == 0)
+                    // progress
+                    var play_key = GetPlayKey(word.GetHashCode(), true);
+                    if (play_key.Modulate.A == 0)
                     {
-                        play_key.KeyCode = line.KeyCode;
+                        play_key.KeyCode = word.KeyCode;
                     }
-                    play_key.Progress = (line.BeginTime - audio_time) / show_time;
-                    var x = area_x + area_w / 2;
-                    var y = area_y + area_h * (1 - play_key.Progress);
+                    var progress = (word.BeginTime - audio_time) / PlayAreaShowTime;
+                    var x = _playAreaKeyX[play_key.KeyCode];
+                    var y = _PlayAreaTop + _playAreaH * (1 - progress);
+                    play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, (float)progress);
                     play_key.Position = new Vector2((float)x, (float)y);
                 }
                 else
                 {
-                    var play_key = GetPlayKey(line.GetHashCode(), false);
+                    var play_key = GetPlayKey(word.GetHashCode(), false);
                     if (play_key != null)
                     {
-                        // recycle
-                        play_key.Progress = 0;
+                        // miss
+                        _lyricsScore += 0;
+                        UpdatePlayScore();
+
+                        play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, 0);
                         play_key.Position = new Vector2(-99999, -99999);
-                        RecyclePlayKey(line.GetHashCode());
+                        RecyclePlayKey(word.GetHashCode());
                     }
                 }
             }

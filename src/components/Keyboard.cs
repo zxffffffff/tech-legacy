@@ -6,20 +6,23 @@ using Utils;
 [Tool]
 public partial class Keyboard : Node2D
 {
-	private KeyboardType _keyboardType;
+	private KeyboardType _type;
 
 	[Export]
-	public KeyboardType KeyboardType
+	public KeyboardType Type
 	{
-		get { return _keyboardType; }
-		set { _keyboardType = value; ResetKeyboard(); }
+		get { return _type; }
+		set { _type = value; ResetKeyboard(); }
 	}
 
 	[Export]
 	public PackedScene KeyboardKeyTscn { get; set; }
 
-	private CanvasGroup _canvasGroup;
-	private List<List<KeyboardKey>> _keyboardKeys;
+	public CanvasGroup CanvasGroup { get; private set; }
+	public List<List<KeyboardKey>> Keys { get; private set; }
+
+	public delegate void KeyPressEvent(bool isPressed, Key keyCode);
+	public event EventMgr.KeyPressEvent KeyPressCbk;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -34,35 +37,35 @@ public partial class Keyboard : Node2D
 		if (KeyboardKeyTscn == null)
 			return;
 
-		if (_canvasGroup != null)
-			_canvasGroup.QueueFree();
-		_canvasGroup = new CanvasGroup();
-		AddChild(_canvasGroup);
+		if (CanvasGroup != null)
+			CanvasGroup.QueueFree();
+		CanvasGroup = new CanvasGroup();
+		AddChild(CanvasGroup);
 
-		switch (_keyboardType)
+		switch (Type)
 		{
 			case KeyboardType.MiniKeyboard:
-				ResetKeyboard(_canvasGroup, KeyboardMgr.MiniKeyboard());
+				ResetKeyboard(CanvasGroup, KeyboardMgr.MiniKeyboard());
 				break;
 			case KeyboardType.FullKeyboard:
-				ResetKeyboard(_canvasGroup, KeyboardMgr.FullKeyboard());
+				ResetKeyboard(CanvasGroup, KeyboardMgr.FullKeyboard());
 				break;
 			case KeyboardType.LettersOnly:
-				ResetKeyboard(_canvasGroup, KeyboardMgr.LettersOnly());
+				ResetKeyboard(CanvasGroup, KeyboardMgr.LettersOnly());
 				break;
 			case KeyboardType.LettersAndPunctuation:
-				ResetKeyboard(_canvasGroup, KeyboardMgr.LettersAndPunctuation());
+				ResetKeyboard(CanvasGroup, KeyboardMgr.LettersAndPunctuation());
 				break;
 		}
 	}
 
 	public void ResetKeyboard(Node2D parent, List<List<KeyboardKeyMgr>> list)
 	{
-		_keyboardKeys = new List<List<KeyboardKey>>();
+		Keys = new List<List<KeyboardKey>>();
 		int rows = list.Count;
 		for (int row = 0; row < rows; ++row)
 		{
-			var keys = new List<KeyboardKey>();
+			var row_keys = new List<KeyboardKey>();
 			int cols = list[row].Count;
 			for (int col = 0; col < cols; ++col)
 			{
@@ -70,13 +73,14 @@ public partial class Keyboard : Node2D
 				key.KeyCode = list[row][col].KeyCode;
 				key.KeyWidth = list[row][col].KeyWidth;
 				parent.AddChild(key);
-				keys.Add(key);
+				key.KeyPressCbk += KeyPressCbk;
+				row_keys.Add(key);
 			}
-			_keyboardKeys.Add(keys);
+			Keys.Add(row_keys);
 		}
 		for (int row = 0; row < rows; ++row)
 		{
-			LayoutRowKeys(_keyboardKeys[row], row - rows / 2);
+			LayoutRowKeys(Keys[row], row - rows / 2);
 		}
 	}
 

@@ -15,10 +15,10 @@ namespace Utils
         public string Album { get; set; } // al 专辑
         public string Length { get; set; } // length (mm:ss)
 
-        public string[][] Lines { get; set; } // <mm:ss.xx> 1 <mm:ss.xx> 2 <mm:ss.xx>
+        public string[][] Words { get; set; } // <mm:ss.xx> 1 <mm:ss.xx> 2 <mm:ss.xx>
     }
 
-    public class RhythmLyricsLine
+    public class RhythmLyricsWord
     {
         public int Index { get; set; }
         public double BeginTime { get; set; }
@@ -39,21 +39,21 @@ namespace Utils
             ];
         }
 
-        public static RhythmLyricsLine Deserialize(string[] line)
+        public static RhythmLyricsWord Deserialize(string[] words)
         {
-            if (line.Count() < FieldCount)
+            if (words.Count() < FieldCount)
             {
                 GD.PrintErr("invalid line");
                 return null;
             }
 
-            var lyricsLine = new RhythmLyricsLine()
+            var lyricsLine = new RhythmLyricsWord()
             {
-                Index = line[0].ToInt(),
-                BeginTime = double.Parse(line[1]),
-                EndTime = double.Parse(line[2]),
-                Text = line[3],
-                KeyCode = KeyboardKeyMgr.StringToKeyCode(line[4]),
+                Index = words[0].ToInt(),
+                BeginTime = double.Parse(words[1]),
+                EndTime = double.Parse(words[2]),
+                Text = words[3],
+                KeyCode = KeyboardKeyMgr.StringToKeyCode(words[4]),
             };
             return lyricsLine;
         }
@@ -62,7 +62,7 @@ namespace Utils
     public class RhythmLyricsRecord()
     {
         public RhythmLyrics Lyrics { get; private set; }
-        private List<RhythmLyricsLine> _lyricsLines;
+        private List<RhythmLyricsWord> _lyricsWords;
 
         public bool Running { get; private set; }
 
@@ -71,15 +71,15 @@ namespace Utils
             Running = true;
 
             Lyrics = new RhythmLyrics();
-            _lyricsLines = new List<RhythmLyricsLine>();
+            _lyricsWords = new List<RhythmLyricsWord>();
         }
 
         public void Stop()
         {
             Running = false;
 
-            Lyrics.Lines = _lyricsLines.Select(lyricsLine => lyricsLine.Serialize()).ToArray();
-            _lyricsLines = null;
+            Lyrics.Words = _lyricsWords.Select(lyricsLine => lyricsLine.Serialize()).ToArray();
+            _lyricsWords = null;
         }
 
         public void Tap(Key keyCode, double beginTime, double endTime)
@@ -91,15 +91,33 @@ namespace Utils
                 return;
             }
 
-            var lyricsLine = new RhythmLyricsLine()
+            var lyricsWord = new RhythmLyricsWord()
             {
                 // Todo 需要手动修改 Index 和 Text
                 BeginTime = beginTime,
                 EndTime = endTime,
                 KeyCode = keyCode,
             };
-            _lyricsLines.Add(lyricsLine);
+            _lyricsWords.Add(lyricsWord);
         }
+    }
+
+    public enum RhythmPlayState
+    {
+        Init,
+        Playing,
+        Pausing,
+        Settlement,
+    }
+
+    public enum RhythmPlayTrigger
+    {
+        Play,
+        Record,
+        Pause,
+        PauseResume,
+        GG,
+        Clear,
     }
 
     public class KeyboardRhythmMgr
@@ -114,14 +132,14 @@ namespace Utils
             return JsonSerializer.Deserialize<RhythmLyrics>(json);
         }
 
-        public static List<RhythmLyricsLine> DeserializeLines(string[][] lines)
+        public static List<RhythmLyricsWord> DeserializeWords(string[][] words)
         {
-            if (lines == null)
+            if (words == null)
             {
-                GD.PrintErr("DeserializeLines is null");
+                GD.PrintErr("DeserializeWords is null");
                 return null;
             }
-            return lines.Select(line => RhythmLyricsLine.Deserialize(line)).ToList();
+            return words.Select(word => RhythmLyricsWord.Deserialize(word)).ToList();
         }
     }
 }

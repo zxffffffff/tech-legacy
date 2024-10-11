@@ -42,10 +42,9 @@ public partial class KeyboardKey : Area2D
 	}
 
 	[Export]
-	public double Progress { get; set; } = 0;
-
-	[Export]
 	public bool EnableInput { get; set; } = true;
+
+	public event EventMgr.KeyPressEvent KeyPressCbk;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -89,13 +88,13 @@ public partial class KeyboardKey : Area2D
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsPressed");
 				IsPressed = true;
-				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
+				KeyPressCbk(IsPressed, KeyCode);
 			}
 			else if (_isPressed && mouseEvent.IsReleased())
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsReleased");
 				IsPressed = false;
-				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
+				KeyPressCbk(IsPressed, KeyCode);
 			}
 		}
 	}
@@ -111,13 +110,13 @@ public partial class KeyboardKey : Area2D
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsPressed");
 				IsPressed = true;
-				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
+				KeyPressCbk(IsPressed, KeyCode);
 			}
 			else if (_isPressed && keyEvent.IsReleased())
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsReleased");
 				IsPressed = false;
-				EventBus.Instance.EmitKeyPress(IsPressed, KeyCode);
+				KeyPressCbk(IsPressed, KeyCode);
 			}
 		}
 	}

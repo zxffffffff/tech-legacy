@@ -9,10 +9,10 @@ public partial class KeyboardRhythm : Node2D
     public Button BtnBack;
 
     [Export]
-    public Button BtnCreate;
+    public Button BtnPlay;
 
     [Export]
-    public Button BtnPlay;
+    public Button BtnRecord;
 
     [Export]
     public KeyboardRhythmPlay RhythmPlay;
@@ -23,9 +23,10 @@ public partial class KeyboardRhythm : Node2D
         base._Ready();
 
         BtnBack.Pressed += OnBtnBack;
-        BtnCreate.Pressed += Record;
-        BtnPlay.Pressed += Play;
-        RhythmPlay.PlayStop += OnPlayStop;
+        BtnPlay.Pressed += () => Play();
+        BtnRecord.Pressed += () => Record();
+
+        RhythmPlay.Finished += OnPlayStop;
     }
 
     public void OnBtnBack()
@@ -36,33 +37,31 @@ public partial class KeyboardRhythm : Node2D
         }
         else
         {
-            RhythmPlay.Stop(false);
+            RhythmPlay.Action(RhythmPlayTrigger.GG);
         }
-    }
-
-    public void Record()
-    {
-        BtnCreate.Visible = false;
-        BtnPlay.Visible = false;
-
-        RhythmPlay.Visible = true;
-        RhythmPlay.Record();
     }
 
     public void Play()
     {
-        BtnCreate.Visible = false;
+        BtnRecord.Visible = false;
         BtnPlay.Visible = false;
 
         RhythmPlay.Visible = true;
-        RhythmPlay.Play();
+        RhythmPlay.Action(RhythmPlayTrigger.Play);
     }
 
-    private void OnPlayStop(bool isFinished)
+    public void Record()
     {
-        BtnCreate.Visible = true;
+        Play();
+        RhythmPlay.Action(RhythmPlayTrigger.Record);
+    }
+
+    private void OnPlayStop()
+    {
+        BtnRecord.Visible = true;
         BtnPlay.Visible = true;
 
         RhythmPlay.Visible = false;
+        RhythmPlay.Action(RhythmPlayTrigger.Clear);
     }
 }

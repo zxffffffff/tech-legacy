@@ -3,9 +3,11 @@ using System;
 
 namespace Utils
 {
+    /// <summary>
+    /// 单例模式 Godot autoload
+    /// </summary>
     public partial class Common : Node
     {
-        // 单例模式 Godot autoload
         public static Common Instance { get; private set; }
 
         public override void _Ready()

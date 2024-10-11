@@ -6,4 +6,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>techlegacy</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stateless" Version="5.16.0" />
+  </ItemGroup>
 </Project>
