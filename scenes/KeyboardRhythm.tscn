@@ -3,11 +3,11 @@
 [ext_resource type="Script" path="res://src/components/KeyboardRhythm.cs" id="1_horxn"]
 [ext_resource type="PackedScene" uid="uid://da7y5lp0aox28" path="res://scenes/components/KeyboardRhythmPlay.tscn" id="2_eoyml"]
 
-[node name="Node2D" type="Node2D" node_paths=PackedStringArray("BtnBack", "BtnCreate", "BtnPlay", "RhythmPlay")]
+[node name="Node2D" type="Node2D" node_paths=PackedStringArray("BtnBack", "BtnPlay", "BtnRecord", "RhythmPlay")]
 script = ExtResource("1_horxn")
 BtnBack = NodePath("Control/ButtonBack")
-BtnCreate = NodePath("Control/ButtonCreate")
 BtnPlay = NodePath("Control/ButtonPlay")
+BtnRecord = NodePath("Control/ButtonRecord")
 RhythmPlay = NodePath("KeyboardRhythmPlay")
 
 [node name="Control" type="Control" parent="."]
@@ -25,15 +25,6 @@ offset_bottom = 46.0
 theme_override_font_sizes/font_size = 36
 text = "Back"
 
-[node name="ButtonCreate" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = 592.0
-offset_top = 347.0
-offset_right = 753.0
-offset_bottom = 422.0
-theme_override_font_sizes/font_size = 48
-text = "Create"
-
 [node name="ButtonPlay" type="Button" parent="Control"]
 layout_mode = 0
 offset_left = 618.0
@@ -42,6 +33,15 @@ offset_right = 723.0
 offset_bottom = 309.0
 theme_override_font_sizes/font_size = 48
 text = "Play"
+
+[node name="ButtonRecord" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 592.0
+offset_top = 347.0
+offset_right = 753.0
+offset_bottom = 422.0
+theme_override_font_sizes/font_size = 48
+text = "Record"
 
 [node name="KeyboardRhythmPlay" parent="." instance=ExtResource("2_eoyml")]
 visible = false

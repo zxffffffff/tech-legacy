@@ -2,3 +2,6 @@
 .godot/
 /android/
 .DS_Store
+.vs/
+*.csproj.user
+*.csproj.old

@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "tech-legacy": {
+      "commandName": "Project"
+    },
+    "Godot 4": {
+      "commandName": "Executable",
+      "executablePath": "%GODOT4%",
+      "workingDirectory": ".",
+      "nativeDebugging": true
+    }
+  }
+}
