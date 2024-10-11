@@ -21,7 +21,6 @@ public partial class Keyboard : Node2D
 	public CanvasGroup CanvasGroup { get; private set; }
 	public List<List<KeyboardKey>> Keys { get; private set; }
 
-	public delegate void KeyPressEvent(bool isPressed, Key keyCode);
 	public event EventMgr.KeyPressEvent KeyPressCbk;
 
 	// Called when the node enters the scene tree for the first time.
@@ -72,8 +71,8 @@ public partial class Keyboard : Node2D
 				var key = KeyboardKeyTscn.Instantiate() as KeyboardKey;
 				key.KeyCode = list[row][col].KeyCode;
 				key.KeyWidth = list[row][col].KeyWidth;
+				key.KeyPressCbk += (bool isPressed, Key keyCode) => KeyPressCbk(isPressed, keyCode);
 				parent.AddChild(key);
-				key.KeyPressCbk += KeyPressCbk;
 				row_keys.Add(key);
 			}
 			Keys.Add(row_keys);

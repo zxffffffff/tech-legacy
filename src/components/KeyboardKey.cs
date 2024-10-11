@@ -51,7 +51,7 @@ public partial class KeyboardKey : Area2D
 	{
 		base._Ready();
 
-		InputEvent += KeyInputEvent;
+		InputEvent += CollisionInput;
 		UpdateKeyUI();
 	}
 
@@ -77,7 +77,7 @@ public partial class KeyboardKey : Area2D
 		KeyLabel.Position = new Vector2(KeyLabel.Position.X, KeyLabel.Position.Y + (IsPressed ? 4 : -4));
 	}
 
-	private void KeyInputEvent(Node viewport, InputEvent @event, long shapeIdx)
+	private void CollisionInput(Node viewport, InputEvent @event, long shapeIdx)
 	{
 		if (!EnableInput)
 			return;
@@ -88,13 +88,15 @@ public partial class KeyboardKey : Area2D
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsPressed");
 				IsPressed = true;
-				KeyPressCbk(IsPressed, KeyCode);
+				if (KeyPressCbk != null)
+					KeyPressCbk(IsPressed, KeyCode);
 			}
 			else if (_isPressed && mouseEvent.IsReleased())
 			{
 				// GD.Print($"{KeyCode} mouseEvent.IsReleased");
 				IsPressed = false;
-				KeyPressCbk(IsPressed, KeyCode);
+				if (KeyPressCbk != null)
+					KeyPressCbk(IsPressed, KeyCode);
 			}
 		}
 	}
@@ -110,13 +112,15 @@ public partial class KeyboardKey : Area2D
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsPressed");
 				IsPressed = true;
-				KeyPressCbk(IsPressed, KeyCode);
+				if (KeyPressCbk != null)
+					KeyPressCbk(IsPressed, KeyCode);
 			}
 			else if (_isPressed && keyEvent.IsReleased())
 			{
 				// GD.Print($"{KeyCode} keyEvent.IsReleased");
 				IsPressed = false;
-				KeyPressCbk(IsPressed, KeyCode);
+				if (KeyPressCbk != null)
+					KeyPressCbk(IsPressed, KeyCode);
 			}
 		}
 	}

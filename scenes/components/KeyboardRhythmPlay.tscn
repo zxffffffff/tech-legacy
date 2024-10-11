@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/components/KeyboardRhythmPlay.cs" id="1_v2eur"]
 [ext_resource type="PackedScene" uid="uid://bn3dps55cged8" path="res://scenes/components/KeyboardKey.tscn" id="2_vxamm"]
-[ext_resource type="PackedScene" uid="uid://hvve8okt4njb" path="res://scenes/components/keyboard.tscn" id="3_cm20s"]
+[ext_resource type="PackedScene" uid="uid://hvve8okt4njb" path="res://scenes/components/Keyboard.tscn" id="3_cm20s"]
 [ext_resource type="AudioStream" uid="uid://crdr53g7o1vqy" path="res://assets/KeyboardRhythm/TwoTigers.mp3" id="4_b6o1b"]
 [ext_resource type="Texture2D" uid="uid://bhkxfgm0up8fn" path="res://assets/Complete_UI_Essential_Pack_Free/01_Flat_Theme/Sprites/UI_Flat_Bar10a.png" id="5_s13fo"]
 
@@ -16,19 +16,22 @@ AudioJsonPath = "res://assets/KeyboardRhythm/TwoTigers.json"
 KeyboardKeyTscn = ExtResource("2_vxamm")
 
 [node name="PlayScore" type="Label" parent="."]
-offset_left = 94.0
-offset_top = 48.0
-offset_right = 134.0
-offset_bottom = 71.0
+offset_left = 1116.0
+offset_top = 30.0
+offset_right = 1260.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 36
+text = "1000000"
+
+[node name="PlayArea" type="Sprite2D" parent="."]
+position = Vector2(683, 265)
+scale = Vector2(25, 40)
+texture = ExtResource("5_s13fo")
+
+[node name="Keyboard" parent="." instance=ExtResource("3_cm20s")]
+position = Vector2(683, 625)
+scale = Vector2(2, 2)
+Type = 2
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_b6o1b")
-
-[node name="Keyboard" parent="." instance=ExtResource("3_cm20s")]
-position = Vector2(683, 630)
-scale = Vector2(2, 2)
-
-[node name="PlayArea" type="Sprite2D" parent="."]
-position = Vector2(683, 271.5)
-scale = Vector2(25, 39.5833)
-texture = ExtResource("5_s13fo")
