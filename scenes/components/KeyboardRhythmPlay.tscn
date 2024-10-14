@@ -21,7 +21,7 @@ offset_top = 30.0
 offset_right = 1260.0
 offset_bottom = 80.0
 theme_override_font_sizes/font_size = 36
-text = "1000000"
+text = "0/0"
 
 [node name="PlayArea" type="Sprite2D" parent="."]
 position = Vector2(683, 265)

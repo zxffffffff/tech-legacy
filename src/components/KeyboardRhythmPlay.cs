@@ -42,10 +42,13 @@ public partial class KeyboardRhythmPlay : Node2D
     float _PlayAreaTop = 0;
     Dictionary<Key, float> _playAreaKeyX;
 
+    // [0]--[show]--[tap]--[miss]-->
     [Export]
-    double PlayAreaShowTime { get; set; } = 2.5f;
+    double PlayAreaShowTime { get; set; } = 3.5f;
     [Export]
-    double PlayAreaPressTime { get; set; } = 0.5f;
+    double PlayAreaTapTime { get; set; } = 0.6f;
+    [Export]
+    double PlayAreaMissTime { get; set; } = 0.3f;
 
     // cbk
     public delegate void FinishedCbk();
@@ -95,14 +98,16 @@ public partial class KeyboardRhythmPlay : Node2D
         _lyricsWords = KeyboardRhythmMgr.DeserializeWords(lyrics.Words);
         _lyricsScore = 0;
 
-        _playAreaH = PlayArea.Texture.GetSize().Y * PlayArea.Scale.Y;
+        _playAreaH = PlayArea.Texture.GetSize().Y * PlayArea.Scale.Y * 0.9f;
         _PlayAreaTop = PlayArea.Position.Y - _playAreaH / 2;
         _playAreaKeyX = new Dictionary<Key, float>();
+        // GD.Print($"_PlayAreaTop={_PlayAreaTop}, _playAreaH={_playAreaH}");
         foreach (var row_keys in PlayKeyboard.Keys)
         {
             foreach (var key in row_keys)
             {
                 _playAreaKeyX[key.KeyCode] = PlayKeyboard.Position.X + key.Position.X * PlayKeyboard.Scale.X;
+                // GD.Print($"_playAreaKeyX[{key.KeyCode}]={_playAreaKeyX[key.KeyCode]}");
             }
         }
 
@@ -219,25 +224,30 @@ public partial class KeyboardRhythmPlay : Node2D
             GD.PrintErr("RecyclePlayKey is null");
             return;
         }
+        item.Modulate = new Color(item.Modulate.R, item.Modulate.G, item.Modulate.B, 0);
+        item.Position = new Vector2(-99999, -99999);
         _playKeys.Remove(hash);
         _recycleKeys.Add(item);
     }
 
-    private bool CheckShowTime(RhythmLyricsWord word, double audio_time)
+    private double CheckShowProgress(double lyrics_time, double now_time)
     {
-        // [0]--[show]--[tap]--[miss]-->
-        var show_time = audio_time - PlayAreaShowTime;
-        var tap_time = audio_time - PlayAreaPressTime / 2;
-        var miss_time = audio_time + PlayAreaPressTime / 2;
-        Debug.Assert(show_time <= tap_time);
-        return show_time <= word.BeginTime && word.BeginTime <= miss_time;
+        // [0]--[show]--[now]--[miss]-->
+        var show_time = lyrics_time - PlayAreaShowTime;
+        var miss_time = lyrics_time + PlayAreaMissTime / 2;
+        // 0~100%
+        var progress = (now_time - show_time) / (miss_time - show_time);
+        return progress;
     }
 
-    private bool CheckTapTime(RhythmLyricsWord word, double audio_time)
+    private double CheckTapProgress(double lyrics_time, double now_time)
     {
-        var tap_time = audio_time - PlayAreaPressTime / 2;
-        var miss_time = audio_time + PlayAreaPressTime / 2;
-        return tap_time <= word.BeginTime && word.BeginTime <= miss_time;
+        // [0]--[tap]--[now]--[miss]-->
+        var tap_time = lyrics_time - PlayAreaTapTime;
+        var miss_time = lyrics_time + PlayAreaMissTime / 2;
+        // 0~100%
+        var progress = (now_time - tap_time) / (miss_time - tap_time);
+        return progress;
     }
 
     private void OnKeyPressEvent(bool isPressed, Key keyCode)
@@ -245,38 +255,46 @@ public partial class KeyboardRhythmPlay : Node2D
         if (keyCode == Key.None)
             return;
 
+        var now_time = AudioTime();
+
+        // record
         if (_lyricsRecord != null)
         {
-            var audio_time = AudioTime();
             if (isPressed)
-                _timeKeyDown[keyCode] = audio_time;
+                _timeKeyDown[keyCode] = now_time;
             else
-                _lyricsRecord.Tap(keyCode, _timeKeyDown[keyCode], audio_time);
+                _lyricsRecord.Tap(keyCode, _timeKeyDown[keyCode], now_time);
         }
 
+        // play tap
         if (_fsm.State == RhythmPlayState.Playing && isPressed)
         {
-            var audio_time = AudioTime();
             for (int i = 0; i < _lyricsWords.Count; ++i)
             {
                 var word = _lyricsWords[i];
-                if (CheckTapTime(word, audio_time))
+                var play_key = GetPlayKey(word.GetHashCode(), false);
+                if (play_key != null && play_key.Visible)
                 {
-                    var play_key = GetPlayKey(word.GetHashCode(), false);
-                    if (play_key == null)
+                    var tap_progress = CheckTapProgress(word.BeginTime, now_time);
+                    if (0 <= tap_progress && tap_progress <= 1)
                     {
-                        GD.PrintErr("GetPlayKey tap is null");
-                        continue;
+                        if (word.KeyCode == keyCode)
+                        {
+                            // tap
+                            GD.Print($" tap {word.Text} {word.KeyCode}");
+                            _lyricsScore += 1;
+                            UpdatePlayScore();
+                            play_key.Hide();
+                            break;
+                        }
+                        else
+                        {
+                            // lose
+                            GD.Print($"lose {word.Text} {word.KeyCode} != {keyCode}");
+                            play_key.Hide();
+                            continue;
+                        }
                     }
-
-                    // tap
-                    GD.Print($"tap {play_key.KeyLabel.Text}");
-                    _lyricsScore += 1;
-                    UpdatePlayScore();
-
-                    play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, 0);
-                    play_key.Position = new Vector2(-99999, -99999);
-                    RecyclePlayKey(word.GetHashCode());
                 }
             }
         }
@@ -287,26 +305,30 @@ public partial class KeyboardRhythmPlay : Node2D
     {
         if (_fsm.State == RhythmPlayState.Playing)
         {
-            var audio_time = AudioTime();
+            var now_time = AudioTime();
+
             for (int i = 0; i < _lyricsWords.Count; ++i)
             {
                 var word = _lyricsWords[i];
-                if (CheckShowTime(word, audio_time))
+                var show_progress = CheckShowProgress(word.BeginTime, now_time);
+                if (0 <= show_progress && show_progress <= 1)
                 {
-                    // progress
                     var play_key = GetPlayKey(word.GetHashCode(), true);
                     if (play_key.Modulate.A == 0)
                     {
+                        // show
+                        GD.Print($"show {word.Text} {word.KeyCode}");
                         play_key.KeyCode = word.KeyCode;
                         play_key.IsPressed = false;
+                        play_key.Show();
                     }
-                    var progress = (word.BeginTime - audio_time) / PlayAreaShowTime;
                     var x = _playAreaKeyX[play_key.KeyCode];
-                    var y = _PlayAreaTop + _playAreaH * (1 - progress);
-                    play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, (float)(1 - progress));
+                    var y = _PlayAreaTop + _playAreaH * show_progress;
+                    play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, (float)show_progress);
                     play_key.Position = new Vector2((float)x, (float)y);
 
-                    if (CheckTapTime(word, audio_time))
+                    var tap_progress = CheckTapProgress(word.BeginTime, now_time);
+                    if (0 <= tap_progress && tap_progress <= 1)
                     {
                         // can tap
                         play_key.IsPressed = true;
@@ -317,13 +339,14 @@ public partial class KeyboardRhythmPlay : Node2D
                     var play_key = GetPlayKey(word.GetHashCode(), false);
                     if (play_key != null)
                     {
-                        // miss
-                        GD.Print($"miss {play_key.KeyLabel.Text}");
-                        _lyricsScore += 0;
-                        UpdatePlayScore();
-
-                        play_key.Modulate = new Color(play_key.Modulate.R, play_key.Modulate.G, play_key.Modulate.B, 0);
-                        play_key.Position = new Vector2(-99999, -99999);
+                        if (play_key.Visible)
+                        {
+                            // miss
+                            GD.Print($"miss {word.Text} {word.KeyCode}");
+                            _lyricsScore += 0;
+                            UpdatePlayScore();
+                            play_key.Hide();
+                        }
                         RecyclePlayKey(word.GetHashCode());
                     }
                 }

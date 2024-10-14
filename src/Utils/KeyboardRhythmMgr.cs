@@ -93,9 +93,10 @@ namespace Utils
 
             var lyricsWord = new RhythmLyricsWord()
             {
-                // Todo 需要手动修改 Index 和 Text
+                Index = _lyricsWords.Count,
                 BeginTime = beginTime,
                 EndTime = endTime,
+                Text = keyCode.ToString(),
                 KeyCode = keyCode,
             };
             _lyricsWords.Add(lyricsWord);

@@ -46,4 +46,3 @@ text = "Record"
 [node name="KeyboardRhythmPlay" parent="." instance=ExtResource("2_eoyml")]
 visible = false
 PlayAreaShowTime = 2.0
-PlayAreaPressTime = 0.2
