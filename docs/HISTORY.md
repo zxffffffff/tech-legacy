@@ -78,3 +78,12 @@ sudo dotnet workload update
 ### 单例模式配置
 
 - 项目设置/全局/自动加载：添加 C# 脚本和节点名称
+
+### 3rd 依赖
+
+- 在外部目录管理依赖项 `../tech-legacy-3rd`
+
+```sh
+# forked from neogeek/rhythm-game-utilities
+git submodule add https://github.com/zxffffffff/rhythm-game-utilities.git dotnet/rhythm-game-utilities
+```

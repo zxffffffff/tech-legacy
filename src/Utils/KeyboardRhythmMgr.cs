@@ -1,7 +1,9 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace Utils
@@ -121,8 +123,31 @@ namespace Utils
         Clear,
     }
 
+    /// <summary>
+    /// 单例模式 static new
+    /// </summary>
     public class KeyboardRhythmMgr
     {
+        private static readonly KeyboardRhythmMgr _instance = new KeyboardRhythmMgr();
+
+        public static KeyboardRhythmMgr Instance { get { return _instance; } }
+
+        public void Init()
+        {
+            NativeLibrary.SetDllImportResolver(typeof(RhythmGameUtilities.Common).Assembly, (name, assembly, path) =>
+            {
+                var libDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Libs");
+                GD.Print($"libRhythmGameUtilities {libDir}");
+                return name switch
+                {
+                    "libRhythmGameUtilities.dll" => NativeLibrary.Load(Path.Combine(libDir, "Windows", name)),
+                    "libRhythmGameUtilities.dylib" => NativeLibrary.Load(Path.Combine(libDir, "macOS", name)),
+                    "libRhythmGameUtilities.so" => NativeLibrary.Load(Path.Combine(libDir, "Linux", name)),
+                    _ => NativeLibrary.Load(name, assembly, path)
+                };
+            });
+        }
+
         public static string Serialize(RhythmLyrics lyrics)
         {
             return JsonSerializer.Serialize(lyrics);
