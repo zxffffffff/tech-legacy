@@ -21,7 +21,7 @@ public partial class KeyboardRhythm : Node2D
     public override void _Ready()
     {
         base._Ready();
-        KeyboardRhythmMgr.Instance.Init();
+        KeyboardRhythmMgr.Instance.Test();
 
         BtnBack.Pressed += OnBtnBack;
         BtnPlay.Pressed += () => Play();

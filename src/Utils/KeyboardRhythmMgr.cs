@@ -132,7 +132,7 @@ namespace Utils
 
         public static KeyboardRhythmMgr Instance { get { return _instance; } }
 
-        public void Init()
+        public KeyboardRhythmMgr()
         {
             NativeLibrary.SetDllImportResolver(typeof(RhythmGameUtilities.Common).Assembly, (name, assembly, path) =>
             {
@@ -146,6 +146,12 @@ namespace Utils
                     _ => NativeLibrary.Load(name, assembly, path)
                 };
             });
+        }
+
+        public void Test()
+        {
+            var test = RhythmGameUtilities.Common.Lerp(0, 10, 0.5f); // == 5
+            GD.Print($"libRhythmGameUtilities Common.Lerp test={test}");
         }
 
         public static string Serialize(RhythmLyrics lyrics)
