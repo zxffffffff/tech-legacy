@@ -85,5 +85,6 @@ sudo dotnet workload update
 
 ```sh
 # forked from neogeek/rhythm-game-utilities
-git submodule add https://github.com/zxffffffff/rhythm-game-utilities.git dotnet/rhythm-game-utilities
+git submodule add https://github.com/zxffffffff/rhythm-game-utilities.git rhythm-game-utilities
+git submodule update --init --recursive
 ```

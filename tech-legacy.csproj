@@ -8,25 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Stateless" Version="5.16.0" />
-    <ProjectReference
-      Include="../tech-legacy-3rd/dotnet/rhythm-game-utilities/RhythmGameUtilities/RhythmGameUtilities.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-    <None
-      Include="../tech-legacy-3rd/dotnet/rhythm-game-utilities/RhythmGameUtilities/Libs/Windows/libRhythmGameUtilities.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-    <None
-      Include="../tech-legacy-3rd/dotnet/rhythm-game-utilities/RhythmGameUtilities/Libs/macOS/libRhythmGameUtilities.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-    <None
-      Include="../tech-legacy-3rd/dotnet/rhythm-game-utilities/RhythmGameUtilities/Libs/Linux/libRhythmGameUtilities.so">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="com.neogeek.rhythm-game-utilities" Version="1.0.0-alpha.3" />
   </ItemGroup>
 </Project>

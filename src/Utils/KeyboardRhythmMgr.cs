@@ -134,18 +134,18 @@ namespace Utils
 
         public KeyboardRhythmMgr()
         {
-            NativeLibrary.SetDllImportResolver(typeof(RhythmGameUtilities.Common).Assembly, (name, assembly, path) =>
-            {
-                var libDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Libs");
-                GD.Print($"libRhythmGameUtilities {libDir}");
-                return name switch
-                {
-                    "libRhythmGameUtilities.dll" => NativeLibrary.Load(Path.Combine(libDir, "Windows", name)),
-                    "libRhythmGameUtilities.dylib" => NativeLibrary.Load(Path.Combine(libDir, "macOS", name)),
-                    "libRhythmGameUtilities.so" => NativeLibrary.Load(Path.Combine(libDir, "Linux", name)),
-                    _ => NativeLibrary.Load(name, assembly, path)
-                };
-            });
+            // NativeLibrary.SetDllImportResolver(typeof(RhythmGameUtilities.Common).Assembly, (name, assembly, path) =>
+            // {
+            //     var libDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Libs");
+            //     GD.Print($"libRhythmGameUtilities {libDir}");
+            //     return name switch
+            //     {
+            //         "libRhythmGameUtilities.dll" => NativeLibrary.Load(Path.Combine(libDir, "Windows", name)),
+            //         "libRhythmGameUtilities.dylib" => NativeLibrary.Load(Path.Combine(libDir, "macOS", name)),
+            //         "libRhythmGameUtilities.so" => NativeLibrary.Load(Path.Combine(libDir, "Linux", name)),
+            //         _ => NativeLibrary.Load(name, assembly, path)
+            //     };
+            // });
         }
 
         public void Test()
